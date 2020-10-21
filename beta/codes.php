@@ -1,0 +1,285 @@
+<?php 
+    session_start();
+    ob_start();
+    include "php/user.php";
+    $con = new database;
+    $user = new user;
+    $con->connect();
+    $userid = $_SESSION['id'];
+    $user->initChecks(); 
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>AnGerNetwork - Dash</title>
+
+        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <!-- Vendors -->
+        <link href="assets/vendors/animate.css/animate.min.css" rel="stylesheet">
+        <link href="assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
+        <link href="assets/vendors/overlay-scrollbars/OverlayScrollbars.min.css" rel="stylesheet">
+        <link href="assets/vendors/fullcalendar/core/main.min.css" rel="stylesheet">
+        <link href="assets/vendors/fullcalendar/daygrid/main.min.css" rel="stylesheet">
+        <link href="assets/css/app.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="assets/vendors/lightgallery/css/lightgallery.min.css">
+    </head>
+<style> 
+.toast{
+    background: #f74d48;
+    border-color: #FFFFFF;
+} 
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #2e343a; }
+    ::-webkit-scrollbar-thumb { background: #f74d48; }
+    ::-webkit-scrollbar-thumb:hover { background: #f74d48; }
+    summary::-webkit-details-marker {
+
+  content: "open";
+}
+
+}              
+</style>
+    <body>
+        <div>
+            <div>
+                <i></i>
+                <i></i>
+                <i></i>
+                <i></i>
+                <i></i>
+                <i></i> 
+            </div>
+        </div>
+
+        <header class="header">
+            <div class="header__main">
+                <i class="navigation-toggle zwicon-hamburger-menu d-xl-none"></i>
+
+                <div class="logo d-none d-md-block">
+                    <a href="index.php">
+                        AnGerNetwork
+                        <small><?php echo $user->getFromTable_MyId("username", "users"); ?></small>
+                    </a>
+                </div>
+
+                <ul class="top-nav">
+                  
+                </ul>
+               
+                <small>
+                ( <?php if($user->getFromTable_MyId("admin", "users") == "3") 
+                { echo "Founder"; }if($user->getFromTable_MyId("admin", "users") == "2") 
+                { echo "Moderator"; }if($user->getFromTable_MyId("admin", "users") == "1") 
+                { echo "Administrator"; }if ($user->getFromTable_MyId("admin", "users") == "0") { echo "Member"; }?> )</small>
+                <div class="user dropdown">
+                    <a data-toggle="dropdown" class="d-block" href="#">
+                        <img class="user__img" src="<?php echo $user->getFromTable_MyId("pic", "users"); ?>" alt="">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown-header"><?php echo $user->getFromTable_MyId("username", "users"); ?></div>
+                        <a class="dropdown-item" href="profile.php"><i class="zmdi zmdi-account"></i> View Profile</a>
+                        <a class="dropdown-item" href="usersettings.php"><i class="zmdi zmdi-settings"></i> Settings</a>
+                        <a class="dropdown-item" href="sign_out.php"><i class="zmdi zmdi-time-restore"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toggles d-none d-xl-block">
+                <a href="#" data-notification="#notifications-messages"><i class="zwicon-mail"></i></a>
+                <a href="#" data-notification="#notifications-alerts"><i class="zwicon-bell"></i></a>
+                <a href="#" data-notification="#notifications-tasks"><i class="zwicon-task"></i></a>
+            </div>
+
+        </header>
+            <div class="main">
+                <div class="sidebar navigation">
+                    <div class="scrollbar">
+                        <ul class="navigation__menu">
+                        <!--Side Bar Begin-->
+                        <?php echo $user->Navigation(); ?>
+                        <!--Side Bar End-->
+                    </ul>
+                </div>
+            </div>
+
+            <section class="content">
+                <header class="content__title">
+                    <h1>Codes<small></small></h1>
+                </header>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Basic Codes To Start Making A RTM Tool</h4>
+                                <br>
+                                <h6 class="card-subtitle">Force Host:</h6>
+                                <h6 class="card-subtitle" style="background-color: #424a69;border-radius: 5px">
+                                	<details>
+    								<summary>ON:</summary>
+                                	<code>
+                                	byte[] buffer = new byte[1];<br>
+            						PS3.SetMemory(0x1cd6018, buffer);<br>
+            						PS3.SetMemory(0x1cd6018, buffer);<br>
+            						</code>
+            						</details>
+            						<details>
+    								<summary>OFF:</summary>
+                                	<code>
+                                	byte[] buffer = new byte[] { 1 };<br>
+            						PS3.SetMemory(0x1cd6018, buffer);<br>
+            						PS3.SetMemory(0x1cd6018, buffer);<br>
+            						</code>
+            					</details>
+        						</h6>
+                                <h6 class="card-subtitle">AnGerNetwork is always being updated for the best experience and tools for you guys</h6>
+                                <br>
+                                <h6 class="card-subtitle">If the site not responded here u can <a href="sign_in.php">re-login...</a></h6>
+                                <br>
+                                 <h6 class="card-subtitle">If you prefer Bitcoin payment method, no worries it is coming up!</h6>
+                                <br>
+                                 <h6 class="card-subtitle">We hav added now blacklisting in our tool so can't be sniffed by others for 3 euro we can blacklist u from our site and tool </h6>
+                                <br>
+                                <h6> </h6>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!--<div class="col-md-3">
+                    	<div class="card">
+                            <div class="card-body">                    
+                                <h6>Tool Features/Announcement</h6>
+                                <br>
+                                    <h6 class="card-subtitle">Best Multi RTM Tool - Most Non Host Mods Options - Unique Client Options </h6>   
+                                <br>
+                                    <h6 class="card-subtitle">4G/VPN/DDOS protected Detection - All Cod IP Spoofer - All Cod Nat Type Spoofer</h6>   
+                                <br>
+                                     <h6 class="card-subtitle">PC Mods</h6>        
+                                <br>
+                                	 <h6 class="card-subtitle">Discord bot: AnGerBot - Includes: resolvers, stresser, port scanner, iplookup and more <a href="https://discord.com/oauth2/authorize?client_id=670575563429380097&permissions=8&scope=bot">Bot link to add it to your server</a></h6>   
+                                <br>
+                                    <h6 class="card-subtitle">Port Scanner - IP Ping - Name Editor - Geolocation Tool - PSN Resolver - PSN Name Checker</h6>   
+                                <br>   
+                                	 <h6 class="card-subtitle">Grab yourself that deal PM For your tool payment *Staff AnGerNetwork*</h6>   
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body">
+                            	<h6>Web & Tool Stats</h6>
+                                <br>
+                                    <h6 class="card-subtitle">Total Users : <?=$user->getUserCount(); ?></h6>   
+                                <br>
+                                    <h6 class="card-subtitle">Pulled PSN History : <?=$user->getPulledIPSCountPSN(); ?></h6>  
+                                <br>
+                                    <h6 class="card-subtitle">Pulled Xbox History : <?=$user->getPulledIPCountXbox(); ?></h6>      
+                                <br>
+                                	<h6 class="card-subtitle">Total Tool Logins : <?=$user->getAllUserMenuLogins(); ?></h6>   
+                                <br>
+                                    <h6 class="card-subtitle">All Logged Count : <?=$user->getPulledIPCountAll(); ?></h6> 
+                                <br>   
+                                	<h6 class="card-subtitle">All IP Storage : <?=$user->getAllUsersIPStorage(); ?></h6>
+                            </div>
+                        </div>
+                    </div>
+                	-->
+               
+                    <div class="col-md-5">
+                    	<div class="card">
+                            <div class="card-body">
+                            	<h6>Site Features/Announcement</h6>
+                                <br>
+                                    <h6 class="card-title">Playstation Resolver</h6> 
+                                    <h6 class="card-subtitle">This tool will try to find the IP Address/Gamertag Hidden behind The Data.</h6>   
+
+                                    <h6 class="card-title">Geo Locater</h6> 
+                                    <h6 class="card-subtitle">Geo Locater This tool will check And try to find the Location of a given IP Address.</h6>   
+                               
+                                    <h6 class="card-title">Port Scanner</h6> 
+                                    <h6 class="card-subtitle">This tool will check Ports of a given IP Address.</h6>        
+                             
+                                    <h6 class="card-title">IP Storage</h6>
+                                	<h6 class="card-subtitle">This tool will Save your given Comments.</h6>   
+                               
+                                    <h6 class="card-title">Logger</h6>
+                                    <h6 class="card-subtitle">This will all upgiven data in our database so u can resolve it anytime.</h6>   
+                            </div>
+                        </div>
+                    </div>
+                  
+                    <div class="col-md-7">
+
+                    <div class="card">
+                    <div class="card-body">
+                        <h6>AnGerNetwork Tool</h6>
+                        <br>
+                        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                            </ol>
+
+                            <div class="carousel-inner" role="listbox">
+                                <div class="carousel-item active">
+                                    <img src="assets/img/images/gta.jpg" alt="First slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="https://angernetwork.dev/beta/assets/img/images/angerstresser.PNG" alt="Second slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="https://angernetwork.dev/beta/assets/img/images/usermanpanel.PNG" alt="Third slide">
+                                </div>
+                            </div>
+                            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </a>
+                            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
+    <nav class="footer__menu">
+        <a  href="https://insane-dev.xyz/index.php">Home</a>
+        <a  href="https://discord.gg/c9STfn7">Discord</a>
+        <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
+        <a  href="https://">VPN coming soon</a>
+    </nav>
+    </br>
+</footer>
+</section>
+</div>
+
+        <!-- Vendors -->
+        <script src="assets/vendors/jquery/jquery.min.js"></script>
+        <script src="assets/vendors/popper.js/popper.min.js"></script>
+        <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/vendors/headroom/headroom.min.js"></script>
+        <script src="assets/vendors/overlay-scrollbars/jquery.overlayScrollbars.min.js"></script>
+        <script src="assets/vendors/flot/jquery.flot.js"></script>
+        <script src="assets/vendors/flot/jquery.flot.resize.js"></script>
+        <script src="assets/vendors/flot/flot.curvedlines/curvedLines.js"></script>
+        <script src="assets/vendors/sparkline/jquery.sparkline.min.js"></script>
+        <script src="assets/vendors/easy-pie-chart/jquery.easypiechart.min.js"></script>
+        <script src="assets/vendors/jqvmap/jquery.vmap.min.js"></script>
+        <script src="assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
+        <script src="assets/vendors/fullcalendar/core/main.min.js"></script>
+        <script src="assets/vendors/fullcalendar/daygrid/main.min.js"></script>
+        <script src="assets/vendors/lightgallery/js/lightgallery-all.min.js"></script>
+        <!-- Site Functions & Actions -->
+        <script src="assets/js/app.min.js"></script>
+    </body>
+</html>
