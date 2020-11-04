@@ -2,10 +2,16 @@
     session_start();
     ob_start();
     include "php/user.php";
+    $ACTUALURL = 'user_app.php';
+    $USERACTIVE = $_SESSION['id'];
     $con = new database;
     $user = new user;
     $con->connect();
+    $ACTUALURL = 'user_app.php';
+    $USERACTIVE = $_SESSION['id'];
     $user->initChecks();
+    $ACTUALURL = 'user_app.php';
+    $USERACTIVE = $_SESSION['id'];
   
 ?>
 <!DOCTYPE html>
@@ -16,7 +22,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>AnGerNetwork - Dash</title>
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="assets/vendors/zwicon/zwicon.min.css">
@@ -114,26 +120,48 @@
 
             <section class="content">
                 <header class="content__title">
-                    <h1>IP History<small></small></h1>
+                    <h1>Downloads<small></small></h1>
                 </header>
 
                 <div class="row">
-                    
+              <!-- <div class="col-md-11">       -->
             <?php 
+            $id;
+            $de;
             $query = $con->db->prepare("SELECT * FROM `downloads`");
             $query->execute();
             $res = $query->fetchAll();
+
+            $queryde = $user->db->prepare("SELECT * FROM `websiteSettings` WHERE `id` = :id");
+            $queryde->execute(array("id"=>"1"));
+            $resde = $queryde->fetch(PDO::FETCH_ASSOC);
+            if($resde['4'] != "1"){
+                $de = 0;
+                // echo '<div class="alert alert-danger"><center>Logins Have Been Disabed By A Staff Member</div>';
+            }else{
+                $de = 1;
+            }
             foreach($res as $row){
+                $id = $row['id'];
             echo '
-                <div class="col-md-6">
+                <div class="col-md-12">
+                
                 <div class="card">
                 <div class="card-body">
                 <h4 class="card-title"></span> '.$row['name'].'</h4>
                 <form method="POST" action="">
                     <div class="form-group">
                         <input type="hidden" name="downlaodnamekek" value="'.$row['id'].'">
-                        <input type="hidden" name="downloadLink" value="'.$row['link'].'">
-                        <button type="submit" class="btn btn-theme btn-block" name="'.$row['id'].'" id="'.$row['id'].'">'.$row['name'].'</button>
+                        <input type="hidden" name="downloadLink" value="'.$row['link'].'">';
+                        if($de == 1){
+                            echo '
+                            <button type="submit" class="btn btn-theme btn-block" name="'.$row['id'].'" id="'.$row['id'].'">'.$row['name'].'</button>';
+                        }
+                        else 
+                        {
+                            echo '<div class="alert alert-danger"><center>Downloads Has Been Disabled By A Staff Member</div>';
+                        }
+                        echo '
                                         <hr>
                                         <label>Downloads : '.$row['downloadCount'].'</label>
                                         <hr>
@@ -141,22 +169,50 @@
                                         <hr>
                                         <label>Last Download : '.$user->humanTiming($row['lastDownload']).' Ago</label>
                                         </div>
-                                    </form>             
+                                    </form> 
+                                    <hr>
+                                    <h4 class="card-title"></span>Changelogs</h4>
+                               '?>
+                                    <?php
+                                    $query2 = $con->db->prepare("SELECT * FROM `changelogs` WHERE program_id = :pid");
+                                    $query2->execute(array(":pid"=>$id));
+                                    $res2 = $query2->fetchAll();
+                                    foreach($res2 as $row2){
+                                    echo ' <div class="accordion" id="accordionExample">
+                                        <div class="card">
+                                        <div class="card-header">
+
+                                    <a data-toggle="collapse" data-parent="#accordionExample" data-target="#collapseOne'.$row2['id'].'">
+                                        '.$row2['Title'].' '.$row2['Time'].' <span class="pull-right">Version : '.$row2['Version'].'</span></a>
+                                        </h4>
+                                        </div>
+                                        <div id="collapseOne'.$row2['id'].'" class="collapse" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                               '.$row2['Log'].'
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    </div>
+                                    ';
+                                    }
+                                    echo '           
                                 </div>
-                            </div>
-                        </div> 
-                   ';                   
+                                </div>
+                                </div>
+
+                    ';                   
                 }
                 ?>
+
                 <?php 
-                if(isset($_POST['downlaodnamekek'])){
+                /*if(isset($_POST['downlaodnamekek'])){
                 $user->update("downloads", array("downloadCount"=>$row['downloadCount'] + 1,"lastDownloader"=>$_SESSION['username']), "id", $_POST['downlaodnamekek']);
                 $user->update("users", array("toolDownloads"=>+ 1), "_SESSION", $_POST['id']);
                 header("Location: ".$_POST['downloadLink'].""); 
                 echo'<script>window.location = "user_app.php";</script>';
-                }
+                }*/ // disabled teh update cuz its not released yet
                 ?>
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">ChangeLogs</h4>
@@ -186,7 +242,7 @@
                         ?>    
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>        
@@ -195,7 +251,7 @@
 </div>
 </div>
 </div>
-<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By AnGer Protection )
     <nav class="footer__menu">
         <a href="#">Home</a>
         <a href="#">Dashboard</a>

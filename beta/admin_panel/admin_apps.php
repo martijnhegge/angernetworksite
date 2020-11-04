@@ -1,6 +1,5 @@
 <?php
     session_start();
-    ob_start();
     include "../php/user.php";
     $user = new user;
     $con = new database;
@@ -9,24 +8,40 @@
     if(!$user->isAdmin()){
         header("Location: ../dashboard.php?error=no-admin");
     }
+
+    if(isset($_POST['savedownload'])){
+        //$_POST['guicolor'] = gui color, i.e #ff0000
+        //$one = (isset($_POST['1']))?1:0; //tool logins
+        $four = (isset($_POST['4']))?1:0;
+        /*$five = (isset($_POST['5']))?1:0; 
+        $six = (isset($_POST['6']))?1:0; 
+        $seven = (isset($_POST['7']))?1:0;
+        $eight = (isset($_POST['8']))?1:0;*/
+
+        $query = $con->db->prepare("UPDATE `websiteSettings` SET `4` = :four WHERE `id` = :id");
+        $query->execute(array("four"=>$four,"id"=>"1"));
+        echo '<script>toastr.success("Successfully saved the changes!");
+            </script>';
+    }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Download log + overview</title>
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
 
-        <title>AnGerNetwork - Dash</title>
+        <!-- Vendor styles -->
+        <link rel="stylesheet" href="../assets/vendors/zwicon/zwicon.min.css">
+        <link rel="stylesheet" href="../assets/vendors/animate.css/animate.min.css">
+        <link rel="stylesheet" href="../assets/vendors/overlay-scrollbars/OverlayScrollbars.min.css">
 
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
-        <!-- Vendors -->
-        <link href="../assets/vendors/animate.css/animate.min.css" rel="stylesheet">
-        <link href="../assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
-        <link href="../assets/vendors/overlay-scrollbars/OverlayScrollbars.min.css" rel="stylesheet">
-        <link href="../assets/vendors/fullcalendar/core/main.min.css" rel="stylesheet">
-        <link href="../assets/vendors/fullcalendar/daygrid/main.min.css" rel="stylesheet">
-        <link href="../assets/css/app.min.css" rel="stylesheet">
+        <!-- App styles -->
+        <link rel="stylesheet" href="../assets/css/app.min.css">
     </head>
 <style> 
 .toast{
@@ -38,6 +53,7 @@
     ::-webkit-scrollbar-thumb:hover { background: #861bc4; }              
 </style>
     <body>
+        <!-- Page Loader -->
         <div>
             <div>
                 <i></i>
@@ -61,9 +77,22 @@
                 </div>
 
                 <ul class="top-nav">
-                  
+                    <li class="d-xl-none">
+                        <a class="top-nav__search" href="#"><i class="zwicon-search"></i></a>
+                    </li>
+
+                    <li class="d-xl-none">
+                        <a data-notification="#notifications-messages" href="#"><i class="zwicon-mail"></i></a>
+                    </li>
+
+                    <li class="d-xl-none">
+                        <a data-notification="#notifications-alerts" href="#"><i class="zwicon-bell"></i></a>
+                    </li>
+
+                    <li class="d-none d-sm-block d-xl-none">
+                        <a data-notification="#notifications-tasks" href="#"><i class="zwicon-task"></i></a>
+                    </li>
                 </ul>
-               
                 <small>
                 ( <?php if($user->getFromTable_MyId("admin", "users") == "3") 
                 { echo "Founder"; }if($user->getFromTable_MyId("admin", "users") == "2") 
@@ -83,7 +112,7 @@
             </div>
 
             <div class="toggles d-none d-xl-block">
-                <a href="#" data-notification="#notifications-messages"><i class="zwicon-mail"></i></a>
+                <a href="#" data-notification="#notifications-messages" class="toggles__notify"><i class="zwicon-mail"></i></a>
                 <a href="#" data-notification="#notifications-alerts"><i class="zwicon-bell"></i></a>
                 <a href="#" data-notification="#notifications-tasks"><i class="zwicon-task"></i></a>
             </div>
@@ -102,24 +131,71 @@
 
             <section class="content">
                 <header class="content__title">
-                    <h1>Dashboard<small></small></h1>
+                    <h1>Payments Overview<small></small></h1>
                 </header>
-          
-                <div class="row">
-                   
 
-                <div class="col-md-3">
-                        <div class="card stats">
-                            <div class="card-body">
-                                <h4 class="card-title">Your Tool Logins</h4>
-                                <h6 class="card-subtitle"></h6>          
-                        </div>
-                    </div>
+                <div class="row">
+                <div class="col-md-12">
+                
+                <div class="card">
+                <div class="card-body">
+                <h4 class="card-title">Allow Downloads</h4>
+                <form method="POST">
+                    <div class="form-group">
+                    <input type="checkbox" class="js-switch" id="4" name="4" <?php echo $user->getMenuSettingStatus(4);?>><span></span> Downloads
+                    <div class="form-group">
+                                    <center><button type="submit" class="btn btn-primary btn-block" name="savedownload" id="savedownload">Save Settings</button></center>
+                                    </div>
+                </form> 
+                </div>
                 </div>
             </div>
-        </div>            
-    </div>            
+        </div>
+                <?php 
+            $id;
+            $query = $con->db->prepare("SELECT * FROM `downloads`");
+            $query->execute();
+            $res = $query->fetchAll();
+            foreach($res as $row){
+                $id = $row['id'];
+            echo '
+                <div class="col-md-12">
+                
+                <div class="card">
+                <div class="card-body">
+                <h4 class="card-title"></span> '.$row['name'].'</h4>
+                <form method="POST" action="">
+                    <div class="form-group">
+                        <input type="hidden" name="downlaodnamekek" value="'.$row['id'].'">
+                        <input type="hidden" name="downloadLink" value="'.$row['link'].'">
+                        
+                                        <hr>
+                                        <label>Downloads : '.$row['downloadCount'].'</label>
+                                        <hr>
+                                        <label>Last Downloaded By : '.$row['lastDownloader'].'</label>
+                                        <hr>
+                                        <label>Last Download : '.$user->humanTiming($row['lastDownload']).' Ago</label>
+                                        </div>
+                                    </form> 
+                                    <hr>
+                                    
+                                </div>
+                                </div>
+                                </div>
+
+                    ';                   
+                }
+                ?>
+
+               
+        </div>
+    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 <footer class="footer">Copyright &copy; 2019 AnGerNetwork
     <nav class="footer__menu">
         <a href="#">Home</a>
@@ -131,24 +207,20 @@
 </footer>
 </section>
 </div>
-
         <!-- Vendors -->
         <script src="../assets/vendors/jquery/jquery.min.js"></script>
         <script src="../assets/vendors/popper.js/popper.min.js"></script>
         <script src="../assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-        <script src="../assets/vendors/headroom/headroom.min.js"></script>
         <script src="../assets/vendors/overlay-scrollbars/jquery.overlayScrollbars.min.js"></script>
-        <script src="../assets/vendors/flot/jquery.flot.js"></script>
-        <script src="../assets/vendors/flot/jquery.flot.resize.js"></script>
-        <script src="../assets/vendors/flot/flot.curvedlines/curvedLines.js"></script>
-        <script src="../assets/vendors/sparkline/jquery.sparkline.min.js"></script>
-        <script src="../assets/vendors/easy-pie-chart/jquery.easypiechart.min.js"></script>
-        <script src="../assets/vendors/jqvmap/jquery.vmap.min.js"></script>
-        <script src="../assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
-        <script src="../assets/vendors/fullcalendar/core/main.min.js"></script>
-        <script src="../assets/vendors/fullcalendar/daygrid/main.min.js"></script>
 
-        <!-- Site Functions & Actions -->
+        <!-- Vendors: Data tables -->
+        <script src="../assets/vendors/datatables/jquery.dataTables.min.js"></script>
+        <script src="../assets/vendors/datatables/datatables-buttons/dataTables.buttons.min.js"></script>
+        <script src="../assets/vendors/datatables/datatables-buttons/buttons.print.min.js"></script>
+        <script src="../assets/vendors/jszip/jszip.min.js"></script>
+        <script src="../assets/vendors/datatables/datatables-buttons/buttons.html5.min.js"></script>
+
+        <!-- App functions -->
         <script src="../assets/js/app.min.js"></script>
     </body>
-</html>
+  

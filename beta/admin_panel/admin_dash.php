@@ -7,7 +7,7 @@
     $con->connect();
     $user->initChecks();
     if(!$user->isAdmin()){
-        //header("Location: ../dashboard.php?error=no-admin");
+        header("Location: ../index.php?error=no-admin");
     }
 ?>
 <!DOCTYPE html>
@@ -19,7 +19,7 @@
 
         <title>Admin - Dash</title>
 
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
         <!-- Vendors -->
         <link href="../assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="../assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">

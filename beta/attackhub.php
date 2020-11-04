@@ -1,12 +1,15 @@
 <?php
     session_start();
     ob_start();
+    $_SESSION['last_page'] = $_SERVER['REQUEST_URI'];
     include "php/user.php";
     $con = new database;
     $user = new user;
     $con->connect();
     $userid = $_SESSION['id'];
     $user->initChecks();
+    $_SESSION['last_page'] = $_SERVER['REQUEST_URI'];
+    //header('Location: sign_in.php');
 
     if($_GET['id'] != null)
     {
@@ -43,13 +46,14 @@
 
         <title>AnGerNetwork - Dash</title>
 
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
         <!-- Vendors -->
         <link href="assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
         <link href="assets/vendors/overlay-scrollbars/OverlayScrollbars.min.css" rel="stylesheet">
         <link href="assets/vendors/fullcalendar/core/main.min.css" rel="stylesheet">
         <link href="assets/vendors/fullcalendar/daygrid/main.min.css" rel="stylesheet">
+        <link href="assets/toastr.min.css" rel="stylesheet">
         <link href="assets/css/app.min.css" rel="stylesheet">
     </head>
 <style> 
@@ -284,7 +288,15 @@
                                         </div>
                                         </div>
                                         <div class="form-actions">
-                                        <button type="submit" name="attackbtn" class="btn btn-danger btn-block">Launch Attack</button>
+                                        <?php 
+                                        $query3 = $user->db->prepare("SELECT * FROM `websiteSettings` WHERE `id` = :id");
+                                        $query3->execute(array("id"=>"1"));
+                                        $res3 = $query3->fetch(PDO::FETCH_ASSOC);
+                                        if($res3['7'] != "1"){
+                                            echo '<div class="alert alert-danger"><center>AnGerStresser Has Been Disabed By A Staff Member</div>';
+                                        }else{
+                                            echo '<button type="submit" name="attackbtn" class="btn btn-danger btn-block">Launch Attack</button>';
+                                        } ?>
                                     </form>
                                 </div>
                             </div>
@@ -300,44 +312,46 @@
                         <div class="table-responsive data-table">
                             <table id="data-table" class="table table-sm">
                                 <thead>
-                                <tr>                    
-                                <th>ID</th>
-                                <th>IP Address</th>
-                                <th>Port</th>
-                                <th>Time</th>
-                                <th>Method</th>
-                                <th>Date</th>
-                                <th>Attack Again</th>
-                                <th>Stop Attack</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php 
-                                $query = $con->db->prepare("SELECT * FROM `ddos_attack_logs` WHERE userid = 1 ORDER BY `id` DESC");
-                                $query->execute();
-                                $res = $query->fetchAll();
-                                foreach($res as $row)
-                                {
-                                echo '
-                                <tr>    
-                                <td>'.$row['id'].'</td>
-                                <td>'.$row['ip'].'</td>
-                                <td>'.$row['port'].'</td>
-                                <td>'.$row['time'].'</td>
-                                <td>'.$row['method'].'</td>
-                                <td><button type="submit" name="addToSafe" class="btn btn-primary btn-block">Attack Again</button></td> 
-                                <td>Stop Attack</td> 
-                                ';  
-                                // echo '
-                                // <td>
-                                // <a type="submit" class="btn btn-primary btn-block pull-right" name="deleteFromSafe" href="logger.php?id='.$row['ID'].'">Remove</a>
-                                // <input type="hidden" name="id" value="'.$row['ID'].'" />     
-                                // </td>
-                                // </tr>
-                                // ';
-                                 }
-                                 ?>
-                                </tbody>
+                                    <tr>                    
+                                        <th>ID</th>
+                                        <th>IP Address</th>
+                                        <th>Port</th>
+                                        <th>Time</th>
+                                        <th>Method</th>
+                                        <th>Date</th>
+                                        <th>Attack Again</th>
+                                        <th>Stop Attack</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php 
+                                    $querya = $con->db->prepare("SELECT * FROM `ddos_attack_log` WHERE `userid` = :id");
+                                    $querya->execute(array("id"=>$_SESSION['id']));
+                                    $resa = $querya->fetchAll();
+                                    foreach($resa as $rowa)
+                                    {
+                                    echo '
+                                    <tr>    
+                                    <td>'.$rowa['id'].'</td>
+                                    <td>'.$rowa['ip'].'</td>
+                                    <td>'.$rowa['port'].'</td>
+                                    <td>'.$rowa['time'].'</td>
+                                    <td>'.$rowa['method'].'</td>
+                                    <td>'.$rowa['date'].'</td>
+                                    <td><button type="submit" name="addToSafe" class="btn btn-primary btn-block">Attack Again</button></td> 
+                                    <td>Stop Attack</td> 
+                                    </tr>
+                                    ';  
+                                    // echo '
+                                    // <td>
+                                    // <a type="submit" class="btn btn-primary btn-block pull-right" name="deleteFromSafe" href="logger.php?id='.$row['ID'].'">Remove</a>
+                                    // <input type="hidden" name="id" value="'.$row['ID'].'" />     
+                                    // </td>
+                                    // </tr>
+                                    // ';
+                                     }
+                                     ?>
+                                    </tbody>
                                 </table>
                                         </div>
                                     </div>
@@ -353,7 +367,7 @@
                     
 <footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By AnGer Protection )
     <nav class="footer__menu">
-        <a  href="https://insane-dev.xyz/index.php">Home</a>
+        <a  href="https://angernetwork.dev/beta/index.php">Home</a>
         <a  href="https://discord.gg/c9STfn7">Discord</a>
         <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
         <a  href="https://">VPN coming soon</a>
@@ -361,28 +375,18 @@
 </footer>
 </section>
 </div>
-<!-- Vendors: Data tables -->
+<!-- Vendors -->
+        <script src="assets/vendors/jquery/jquery.min.js"></script>
+        <script src="assets/vendors/popper.js/popper.min.js"></script>
+        <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/vendors/overlay-scrollbars/jquery.overlayScrollbars.min.js"></script>
+
+        <!-- Vendors: Data tables -->
         <script src="assets/vendors/datatables/jquery.dataTables.min.js"></script>
         <script src="assets/vendors/datatables/datatables-buttons/dataTables.buttons.min.js"></script>
         <script src="assets/vendors/datatables/datatables-buttons/buttons.print.min.js"></script>
         <script src="assets/vendors/jszip/jszip.min.js"></script>
         <script src="assets/vendors/datatables/datatables-buttons/buttons.html5.min.js"></script>
-
-<!-- Vendors -->
-        <script src="assets/vendors/jquery/jquery.min.js"></script>
-        <script src="assets/vendors/popper.js/popper.min.js"></script>
-        <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-        <script src="assets/vendors/headroom/headroom.min.js"></script>
-        <script src="assets/vendors/overlay-scrollbars/jquery.overlayScrollbars.min.js"></script>
-        <script src="assets/vendors/flot/jquery.flot.js"></script>
-        <script src="assets/vendors/flot/jquery.flot.resize.js"></script>
-        <script src="assets/vendors/flot/flot.curvedlines/curvedLines.js"></script>
-        <script src="assets/vendors/sparkline/jquery.sparkline.min.js"></script>
-        <script src="assets/vendors/easy-pie-chart/jquery.easypiechart.min.js"></script>
-        <script src="assets/vendors/jqvmap/jquery.vmap.min.js"></script>
-        <script src="assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
-        <script src="assets/vendors/fullcalendar/core/main.min.js"></script>
-        <script src="assets/vendors/fullcalendar/daygrid/main.min.js"></script>
         <!-- Site Functions & Actions -->
         <script src="assets/js/app.min.js"></script>
     </body>

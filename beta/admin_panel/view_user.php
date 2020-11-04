@@ -205,7 +205,9 @@
      }
      if(isset($_POST['booter']))
      {
-                                $date = new DateTime($con->select("expiry_date", "users", "id", $id)[0][0]);
+                                $query = $con->db->prepare("DELETE FROM `nobooter_access` WHERE `userid` = :id");
+                                $query->execute(array("id"=>$id));
+                                /*$date = new DateTime($con->select("expiry_date", "users", "id", $id)[0][0]);
                                 $today = new DateTime();
                                 if ($date > $today)
                                 {
@@ -218,11 +220,13 @@
                                      $date2 = $newDate->format('Y-m-d H:i:s');
                                     $con->update("users", array("expiry_date"=>$date2), "id", $id);
                                     $con->update("users", array("level"=>"1"), "id", $id);
-                                }
+                                }*/
      }
      if(isset($_POST['remove_booter']))
      {
-                                $date = new DateTime($con->select("expiry_date", "users", "id", $id)[0][0]);
+                                $query = $con->db->prepare("INSERT INTO `nobooter_access` (`userid`, `reason`)VALUES(:userid, :reason)");
+                                $query->execute(array("userid"=>$id, "reason"=>$_POST['nobooterreason']));
+                                /*$date = new DateTime($con->select("expiry_date", "users", "id", $id)[0][0]);
                                 $today = new DateTime();
                                 if ($date > $today)
                                 {
@@ -231,7 +235,7 @@
                                 else
                                 {
                                     $con->update("users", array("level"=>"0"), "id", $id);
-                                }
+                                }*/
      }
      if(isset($_POST['setAdmin']))
      {
@@ -300,7 +304,7 @@
 
         <title>Admin - Dash</title>
 
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png " type="image/x-icon" />
         <!-- Vendors -->
         <link href="../assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="../assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
@@ -533,13 +537,51 @@
                             <div class="card-body">
                                 <h4 class="card-title">Booter</h4>
                                 <form method="POST">
-
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="nobooterreason" id="nobooterreason" placeholder="Enter a reason for removing booter access">
+                                    </div>
                                     <button type="submit" class="btn btn-primary btn-block" name="booter">Grant Booter Access</button>
                                     <button type="submit" class="btn btn-danger btn-block" name="remove_booter">Remove Booter Access</button>
                             </form> 
                             </div>
                         </div>
-                   </div>   
+                   </div> 
+                                       <div class="col-md-3">
+                     
+                    <div class="card stats">
+                    <div class="card-body">
+                        <h4 class="card-title">No-admin page log</h4>
+                        <h6 class="card-subtitle"></h6>
+
+                        <div class="table-responsive data-table">
+                            <table id="data-table" class="table table-sm">
+                                <thead>
+                                <tr>                    
+                                <th>Page</th>
+                                <th>Time</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php 
+                                $queryl = $con->db->prepare("SELECT * FROM `noadmin_logs` WHERE `userid` = :id ORDER BY `id` DESC");
+                                $queryl->execute(array("id"=>$id));
+                                $resl = $queryl->fetchAll();
+                                foreach($resl as $row)
+                                {
+                                echo '
+                                <tr>    
+                                <td>'.$row['page'].'</td>
+                                <td>'.$row['time'].'</td>
+                                ';  
+
+                                 }
+                                 ?>
+                                </tbody>
+                                </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>  
                 </div>  
             </div>
         </div>            

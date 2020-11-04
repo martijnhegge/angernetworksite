@@ -5,23 +5,29 @@
     $user = new user;
     $con = new database;
     $con->connect();
+    // $user->$active-aurl
     $user->initChecks();
     if(!$user->isAdmin()){
-        header("Location: ../dashboard.php?error=no-admin");
+        $_SESSION['no-admin'] = "1";
+        $SQL = $con->db->prepare('INSERT INTO `noadmin_logs` (`userid`, `page`)VALUES(:id, :page)');
+        $SQL->execute(array('id' => $_SESSION['id'], 'page' => $_SERVER['REQUEST_URI']));
+        header("Location: ../index.php");
     }
     if(isset($_POST['save'])){
         //$_POST['guicolor'] = gui color, i.e #ff0000
-        $one = (isset($_POST['1']))?1:0; //community chat
-        $two = (isset($_POST['2']))?1:0; //logins
-        $three = (isset($_POST['3']))?1:0; //registrarions
-        $four = (isset($_POST['4']))?1:0; //downloads
-        $five = (isset($_POST['5']))?1:0; //support
-        $six = (isset($_POST['6']))?1:0; //Plan Store
+        $one = (isset($_POST['1']))?1:0; //tool logins
+        $two = (isset($_POST['2']))?1:0; //stresser enabled
+        $three = (isset($_POST['3']))?1:0; //tool registrations
+/*        $four = (isset($_POST['4']))?1:0;
+        $five = (isset($_POST['5']))?1:0; 
+        $six = (isset($_POST['6']))?1:0; 
         $seven = (isset($_POST['7']))?1:0;
-        $eight = (isset($_POST['8']))?1:0;
+        $eight = (isset($_POST['8']))?1:0;*/
 
-        $query = $con->db->prepare("UPDATE `websiteSettings` SET `1` = :one, `2` = :two, `3` = :three, `4` = :four, `5` = :five, `6` = :six, `7` = :seven, `8` = :eight WHERE `id` = :id");
-        $query->execute(array("one"=>$one,"two"=>$two,"three"=>$three,"four"=>$four,"five"=>$five,"six"=>$six,"seven"=>$seven,"eight"=>$eight,"id"=>"1"));
+        $query = $con->db->prepare("UPDATE `toolSettings` SET `1` = :one, `2` = :two, `3` = :three WHERE `id` = :id");
+        $query->execute(array("one"=>$one,"two"=>$two,"three"=>$three,"id"=>"1"));
+        echo '<script>toastr.success("Successfully saved the changes!");
+            </script>';
     }
 ?>
 <!DOCTYPE html>
@@ -33,7 +39,7 @@
 
         <title>AnGerNetwork - Dash</title>
 
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
         <!-- Vendors -->
         <link href="../assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="../assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
@@ -41,10 +47,22 @@
         <link href="../assets/vendors/fullcalendar/core/main.min.css" rel="stylesheet">
         <link href="../assets/vendors/fullcalendar/daygrid/main.min.css" rel="stylesheet">
         <link href="../assets/css/app.min.css" rel="stylesheet">
+
+        <link href="../assets/toastr.min.css" rel="stylesheet">
+        <link href="assets/css/app.min.css" rel="stylesheet">
     </head>
 <style> 
 .toast{
-    background: #861bc4;
+    background: #5e00da;
+    border-color: #f74d48;
+} 
+.toast-error{
+    background: #f74d48;
+    border-color: #f74d48;
+} 
+.toast-success{
+    background: #66ff66;
+    border-color: #66ff66;
 } 
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #2e343a; }
@@ -116,7 +134,7 @@
 
             <section class="content">
                 <header class="content__title">
-                    <h1>Dashboard<small></small></h1>
+                    <h1>tool settings<small></small></h1>
                 </header>
           
                 <div class="row">
@@ -129,39 +147,39 @@
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="1" name="1" <?php echo $user->getMenuSettingStatus(1); ?>><span></span> Community Chat
+                                            <input type="checkbox" class="js-switch" id="1" name="1" <?php echo $user->getToolSettingStatus(1); ?> onclick="terms_change(this)"><span></span> Tool Logins
                                         </label>
                                     </div>
                                     <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="2" name="2" <?php echo $user->getMenuSettingStatus(2); ?>><span></span> Logins
+                                            <input type="checkbox" class="js-switch" id="2" name="2" <?php echo $user->getToolSettingStatus(2); ?> onclick="terms_change(this)"><span></span> Stresser Enabled
                                             </label>
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="form-group">
                                             <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="3" name="3" <?php echo $user->getMenuSettingStatus(3); ?>><span></span> Registrations
+                                            <input type="checkbox" class="js-switch" id="3" name="3" <?php echo $user->getToolSettingStatus(3); ?> onclick="terms_change(this)"><span></span> Registrations
                                         </label>
                                     </div>
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="4" name="4" <?php echo $user->getMenuSettingStatus(4); ?>><span></span> Downloads
+                                            <input type="checkbox" class="js-switch" id="4" name="4" <?php echo $user->getToolSettingStatus(4); ?>><span></span> Downloads
                                             </label>
-                                        </div>
+                                        </div> -->
                                     </div>
-                                    <div class="col-lg-3">
+                                    <!-- <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="5" name="5" <?php echo $user->getMenuSettingStatus(5); ?>><span></span> Support
+                                            <input type="checkbox" class="js-switch" id="5" name="5" <?php echo $user->getToolSettingStatus(5); ?>><span></span> Support
                                             </label>
                                         </div>
                                     <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="6" name="6" <?php echo $user->getMenuSettingStatus(6); ?>><span></span> Plan Store
+                                            <input type="checkbox" class="js-switch" id="6" name="6" <?php echo $user->getToolSettingStatus(6); ?>><span></span> Plan Store
                                             </label>
                                         </div>
-                                    </div>                                       
+                                    </div>   -->                                     
                                     </div>
                                 <div class="form-group">
                                     <center><button type="submit" class="btn btn-primary btn-block" name="save" id="save">Save Settings</button></center>
@@ -202,7 +220,29 @@
         <script src="../assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
         <script src="../assets/vendors/fullcalendar/core/main.min.js"></script>
         <script src="../assets/vendors/fullcalendar/daygrid/main.min.js"></script>
-
+         <script src="../assets/toastr.min.js"></script>
+<script>
+    function terms_change(checkbox){
+        document.getElementById("save").style.background='#f74d48';
+        toastr.error('there are changes please save them before leaving the page');
+        /*if(checkbox.checked){
+            // alert('Checkbox has been ticked!');
+            document.getElementById("save").style.background='#f74d48';
+            toastr.error('there are changes please save them before leaving the page');
+        }
+        //If it has been unchecked.
+        else{
+            alert('Checkbox has been unticked!');
+        }*/
+    }
+</script>
+<?php
+if(isset($_POST['save'])){
+        
+        echo '<script>toastr.success("Successfully saved the changes!");
+            </script>';
+    }
+    ?>
         <!-- Site Functions & Actions -->
         <script src="../assets/js/app.min.js"></script>
     </body>

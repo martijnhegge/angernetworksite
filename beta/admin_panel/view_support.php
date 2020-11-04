@@ -10,6 +10,17 @@
 
     $id = $_GET['id'];
 
+    if($id)
+    {
+        $queryt = $con->db->prepare("SELECT * FROM `tickets` WHERE `id` = :id");
+        $queryt->execute(array("id"=>$id));
+        $resultt = $queryt->fetch(PDO::FETCH_ASSOC);
+        if($resultt)
+        {
+            $tname = $resultt['username'];
+        }
+    }
+
     if(!$user->isAdmin())
     {
         header("Location: ../index.php?error=no-admin");
@@ -33,20 +44,30 @@
     }
     if(isset($_POST['reply_ticket']))
     {
-        $con->update("tickets", array("ticket_reply"=>$_POST['1'],"ticket_reply_by"=>$_POST['2'], "ticket_status"=>'<span class="label label-warning">STAFF REPLY</span>'), "id", $id);
+        $con->update("tickets", array("reply"=>$_POST['1'],"reply_by"=>$support, "status"=>'<span class="label label-warning">STAFF REPLY</span>'), "id", $id);
+        $con->insert_query("ticket_messages", array("ticketid"=>$id,"reply"=>$_POST['1'],"reply_by"=>$support, "status"=>'<span class="label label-warning">STAFF REPLY</span>'));
+        $header = 'Location: ../adminmail.php?t=reply&m='.$_POST['1'].'&tid='.$id.'&uname='.$tname;
+        header($header);
     }
     if(isset($_POST['resolved_ticket']))
     {
-        $con->update("tickets", array("ticket_reply"=>"This Ticket Has Been Resolved","ticket_reply_by"=>$_POST['2'], "ticket_status"=>'<span class="label label-danger">RESOLVED</span>'), "id", $id);
+        $con->update("tickets", array("reply"=>"This Ticket Has Been Resolved","reply_by"=>$support, "status"=>'<span class="label label-success">RESOLVED</span>'), "id", $id);
+        $con->insert_query("ticket_messages", array("ticketid"=>$id,"reply"=>"Resolved","reply_by"=>$support, "status"=>'<span class="label label-success">RESOLVED</span>'));
+        $header = 'Location: ../adminmail.php?t=resolved&m='.$_POST['1'].'&tid='.$id.'&uname='.$tname;
+        header($header);
     }
     if(isset($_POST['close_ticket']))
     {
-        $con->update("tickets", array("ticket_reply"=>"This Ticket Has Been Closed By A Staff Member","ticket_reply_by"=>$_POST['2'], "ticket_status"=>'<span class="label label-danger">CLOSED</span>'), "id", $id);
+        $con->update("tickets", array("reply"=>"This Ticket Has Been Closed By A Staff Member","reply_by"=>$support, "status"=>'<span class="label label-danger">CLOSED</span>'), "id", $id);
+        $con->insert_query("ticket_messages", array("ticketid"=>$id,"reply"=>"Closed","reply_by"=>$support, "status"=>'<span class="label label-danger">CLOSED</span>'));
+        $header = 'Location: ../adminmail.php?t=closed&m='.$_POST['1'].'&tid='.$id.'&uname='.$tname;
+        header($header);
     }
-    if(isset($_POST['resolved_ticket']))
+/*    if(isset($_POST['resolved_ticket']))
     {
-        $con->update("tickets", array("ticket_reply"=>"This Ticket Has Been Resolved","ticket_reply_by"=>$_POST['2'], "ticket_status"=>'<span class="label label-danger">RESOLVED</span>'), "id", $id);
-    }
+        $con->update("tickets", array("reply"=>"This Ticket Has Been Resolved","reply_by"=>$support, "status"=>'<span class="label label-success">RESOLVED</span>'), "id", $id);
+        $con->insert_query("ticket_messages", array("ticketid"=>$id,"reply"=>$_POST['1'],"reply_by"=>$support, "status"=>'<span class="label label-success">RESOLVED</span>'));
+    }*/
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,7 +76,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>AnGerNetwork - Auth</title>
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png " type="image/x-icon" />
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="../assets/vendors/zwicon/zwicon.min.css">
@@ -65,6 +86,32 @@
         <link rel="stylesheet" href="../assets/css/app.min.css">
 
 <style>
+.label-danger {
+    background-color: #ef5350;
+}
+.label-success {
+    background-color: #4caf50;
+}
+.label-info {
+    background-color: #00bcd4;
+}
+.label-warning {
+    background-color: #f9a825;
+}
+.label {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 75%;
+    font-weight: 700;
+    color: #fff;
+    vertical-align: baseline;
+    border-radius: .25em;
+}
+.badge, .label {
+    line-height: 1;
+    white-space: nowrap;
+    text-align: center;
+    }
 </style>
 </head>
 </style>
@@ -155,26 +202,27 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-header">
-                    <h2>Reply To Ticket<small></small><?php echo $user->getFromTable_ThisId("ticket_status", "tickets", $id); ?></h2>
+                    <h2>Reply To Ticket: <?= $id ?></h2>
+                    <!-- <small> --><?php echo $user->getFromTable_ThisId("status", "tickets", $id); ?><!-- </small> -->
                 </div>
                 <div class="card-body">                   
                     <form method="POST">
                         <div class="form-group">                           
                               <div class="form-group">
                                     <center><label>Subject</label></center>
-                                    <input type="text" class="form-control text-center" value="<?php echo $user->getFromTable_ThisId("subject_title", "tickets", $id); ?>" disabled>
+                                    <input type="text" class="form-control text-center" value="<?php echo $user->getFromTable_ThisId("subject", "tickets", $id); ?>" disabled>
                                     </div>
                                 <div class="form-group">
                                     <center><label>Your Message</label></center>
-                                    <center><input type="text" class="form-control text-center" value="<?php echo $user->getFromTable_ThisId("context_title", "tickets", $id); ?>" disabled>
+                                    <center><input type="text" class="form-control text-center" value="<?php echo $user->getFromTable_ThisId("context", "tickets", $id); ?>" disabled>
                                     </div>
                                 <div class="form-group">
                                     <center><label>Latest Reply From</label></center>
-                                    <textarea rows="1" type="text" class="form-control text-center" disabled><?php echo $user->getFromTable_ThisId("ticket_reply_by", "tickets", $id); ?></textarea>
+                                    <textarea rows="1" type="text" class="form-control text-center" disabled><?php echo $user->getFromTable_ThisId("reply_by", "tickets", $id); ?></textarea>
                                     </div>
                                 <div class="form-group">
-                                    <center><label>Replier Message</label></center>
-                                    <textarea rows="3" type="text" class="form-control text-center" disabled><?php echo $user->getFromTable_ThisId("ticket_reply", "tickets", $id); ?></textarea>
+                                    <center><label>Latest Reply Message</label></center>
+                                    <textarea rows="2" type="text" class="form-control text-center" disabled><?php echo $user->getFromTable_ThisId("reply", "tickets", $id); ?></textarea>
                                     </div>
                                     <hr>
                                 <div class="form-group">
@@ -196,50 +244,44 @@
     <div class="col-md-9">
         <div class="card">
                     <div class="card-header">
-                        <h2> Replies To Tickets <small></small></h2>
+                        <h2> Ticket History | <?= $tname . ' id: ' . $id; ?> <small></small></h2>
                          Please Delete Ticket Afther it's Resolved
                     </div>
                    
                     <div class="card-body">
                         <div class="table-responsive data-table">
                             <table id="data-table" class="table table-sm">
-                               <thead>
+                                <thead>
                                 <tr>
-                                    <th class="text-center">Subject</th>      
-                                    <th class="text-center">Status</th>
-                                    <th class="text-center">Last Reply From</th>
-                                    <th class="text-center">Username</th>
-                                    <th class="text-center">Time Since</th>
-                                    <th class="text-center">Manage</th>
+                                    <th>ID</th>
+                                    <th>TicketID</th>
+                                    <th>Status</th>
+                                    <th>Reply</th>
+                                    <th>Replyer</th>
+                                    <th>Time</th>
                                 </tr>
                                 </thead>
-                                    <tbody>
-                                        <?php 
-                                            $query = $con->db->prepare("SELECT * FROM `tickets` WHERE `username` = :support");
-                                            $query->execute(array("support"=>$user->getFromTable_ThisId("username", "tickets", $id)));
-                                            $query->execute();
+                                <tbody>
+                                <?php 
+                                            $query = $con->db->prepare("SELECT * FROM `ticket_messages` WHERE ticketid = :tid");
+                                            $query->execute(array("tid"=>$id));
                                             $res = $query->fetchAll();
-                                            foreach($res as $row)
-                                            {
+                                            foreach($res as $row){
                                                 echo '
                                                     <tr>    
-                                                        <td><center>'.$row['subject_title'].'</center></td>
-                                                        <td><center>'.$row['ticket_status'].'</center></td>
-                                                        <td><center>'; if($row['ticket_reply'] == null) { echo "No Replies"; } else { echo $row['ticket_reply']; } echo '</center></td>
-                                                        <td><center>'.$row['username'].'</center></td>
-                                                        <td><center>'.$row['time'].'</center></td>              
-                                                        ';
-                                                echo '
-                                                        <td class="text-center">
-                                                            <a type="submit" class="btn btn--light btn-block"name="delete_ticket" id="delete_ticket" href="view_support.php?id='.$row['id'].'">Delete</a>
-                                                        </td>
+                                                        <td>'.$row['id'].'</td>
+                                                        <td>'.$row['ticketid'].'</td>
+                                                        <td>'.$row['status'].'</td>
+                                                        <td>'.$row['reply'].'</td>
+                                                        <td>'.$row['reply_by'].'</td>
+                                                        <td>'.$row['time'].'</td>
                                                     </tr>
                                                 ';
                                             }
                                         ?>
-                                    </tbody>
+                                </tbody>
                                 </table>
-                            </div>
+                                        </div>
                         </div>
                     </div>
                 </div>
@@ -248,9 +290,9 @@
     </div>
 
 
-<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By AnGer Protection )
     <nav class="footer__menu">
-        <a  href="https://insane-dev.xyz/index.php">Home</a>
+        <a  href="https://angernetwork.dev/beta/index.php">Home</a>
         <a  href="https://discord.gg/c9STfn7">Discord</a>
         <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
         <a  href="https://">VPN coming soon</a>

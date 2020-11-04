@@ -20,7 +20,7 @@
 
         <title>AnGerNetwork - Dash</title>
 
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
         <!-- Vendors -->
         <link href="assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
@@ -33,6 +33,8 @@
 .toast{
     background: #f74d48;
 } 
+.insane {
+    color: #861bc4;}
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #2e343a; }
     ::-webkit-scrollbar-thumb { background: #f74d48; }
@@ -329,9 +331,9 @@
         </div>            
     </div>            
 </div>
-<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By AnGer Protection )
     <nav class="footer__menu">
-        <a  href="https://insane-dev.xyz/index.php">Home</a>
+        <a  href="https://angernetwork.dev/beta/index.php">Home</a>
         <a  href="https://discord.gg/c9STfn7">Discord</a>
         <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
         <a  href="https://">VPN coming soon</a>

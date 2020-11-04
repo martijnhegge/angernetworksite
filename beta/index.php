@@ -3,11 +3,17 @@
     ob_start();
     include "php/user.php";
     include "includes/config.php";
+    $ACTUALURL = 'sfsf.php';
     $user = new user;
     $con = new database;
     $con->connect();
+    $ACTUALURL = 'sfsf.php';
     $user->initChecks();
+    $ACTUALURL = 'sfsf.php';
     $message = '';
+    $noadmin = $_SESSION['no-admin'];
+
+    
     
     if(!in_array($_SERVER['HTTP_CF_CONNECTING_IP'], $whitelisted))
     {
@@ -64,18 +70,211 @@
         <link href="assets/vendors/overlay-scrollbars/OverlayScrollbars.min.css" rel="stylesheet">
         <link href="assets/vendors/fullcalendar/core/main.min.css" rel="stylesheet">
         <link href="assets/vendors/fullcalendar/daygrid/main.min.css" rel="stylesheet">
-        <link href="assets/css/app.min.css" rel="stylesheet">
+        
         <link rel="stylesheet" href="assets/vendors/lightgallery/css/lightgallery.min.css">
+
+        <link href="assets/toastr.min.css" rel="stylesheet">
+        <link href="assets/css/app.min.css" rel="stylesheet">
+
+        <script>
+function showResult(str) {
+  if (str.length==0) {
+    document.getElementById("livesearch").innerHTML="";
+    document.getElementById("livesearch").style.border="none";
+    document.getElementById("livesearch").style.background="#2b3c46";
+    document.getElementById("livesearch").classList.remove("form-control");
+    return;
+  }
+  var xmlhttp=new XMLHttpRequest();
+  xmlhttp.onreadystatechange=function() {
+    if (this.readyState==4 && this.status==200) {
+        document.getElementById("livesearch").classList.add("form-control");
+      document.getElementById("livesearch").innerHTML=this.responseText;
+      document.getElementById("livesearch").style.border="1px solid #415969";
+      document.getElementById("livesearch").style.background="#1e2a31";
+      document.getElementById("livesearch").a.style.color="#7996a9";
+      document.getElementById("livesearch").style.borderRadius=".25rem";
+      document.getElementById("livesearch").style.fontSize="3em";
+/*      document.getElementById("livesearch").style.margin="10px";
+      document.getElementById("livesearch").style.padding="10px";
+      document.getElementById("livesearch").style.lineHeight="3";*/
+
+    }
+  }
+  xmlhttp.open("GET","livesearch.php?q="+str,true);
+  xmlhttp.send();
+}
+</script>
+<style>::-webkit-scrollbar { width: 8px;}
+    ::-webkit-scrollbar-track { background: #2e343a; }
+    ::-webkit-scrollbar-thumb { background: #f74d48; }
+    ::-webkit-scrollbar-thumb:hover { background: #f74d48; }  </style>
     </head>
 <style> 
+    
+/*body {
+    overflow: auto;
+    overflow-x: hidden;
+    /*overflow-y: scroll;*
+}*/
+#livesearch a
+{
+    width: 100%;
+    color: #7996a9;
+}
+
+#livesearch a:hover {
+    color: #fff;
+}
+
+.form-control {
+    height: auto;
+}
+/*#livesearch:after {
+    content: '\ea72';
+    font-family: zwicon;
+    position: absolute;
+    left: 1rem;
+    bottom: .5rem;
+    font-size: 1.25rem;
+    color: #dcf3ff;
+
+}*/
+.modal-content{
+    background: #22313a;
+    border: 1px solid #f74d48; /* f74d48 FFA73B*/
+}
+.timeline {
+    border-left: 3px solid #f74d48; /* f74d48 FFA73B*/
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+    background: rgba(114, 124, 245, 0.09);
+    margin: 0 auto;
+    letter-spacing: 0.2px;
+    position: relative;
+    line-height: 1.4em;
+    font-size: 1.03em;
+    padding: 50px;
+    list-style: none;
+    text-align: left;
+    max-width: 40%;
+    background: #2b3c46;
+    color: #7996a9;
+}
+
+@media (max-width: 767px) {
+    .timeline {
+        max-width: 98%;
+        padding: 25px;
+    }
+}
+
+.timeline h1 {
+    font-weight: 300;
+    font-size: 1.4em;
+    color: #f74d48; /* f74d48 FFA73B*/
+}
+
+.timeline h2,
+.timeline h3 {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #f74d48; /* f74d48 FFA73B*/
+}
+
+.timeline .event {
+    border-bottom: 1px dashed #22313a;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+@media (max-width: 767px) {
+    .timeline .event {
+        padding-top: 30px;
+    }
+}
+
+.timeline .event:last-of-type {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border: none;
+}
+
+.timeline .event:before,
+.timeline .event:after {
+    position: absolute;
+    display: block;
+    top: 0;
+}
+
+.timeline .event:before {
+    left: -207px;
+    content: attr(data-date);
+    text-align: right;
+    font-weight: 100;
+    font-size: 0.9em;
+    min-width: 120px;
+}
+
+@media (max-width: 767px) {
+    .timeline .event:before {
+        left: 0px;
+        text-align: left;
+    }
+}
+
+.timeline .event:after {
+    -webkit-box-shadow: 0 0 0 3px #f74d48; /* f74d48 FFA73B*/
+    box-shadow: 0 0 0 3px #f74d48; /* f74d48 FFA73B*/
+    left: -55.8px;
+    background: #22313a;
+    border-radius: 50%;
+    height: 9px;
+    width: 9px;
+    content: "";
+    top: 5px;
+}
+
+@media (max-width: 767px) {
+    .timeline .event:after {
+        left: -31.8px;
+    }
+}
+
+.rtl .timeline {
+    border-left: 0;
+    text-align: right;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    border-right: 3px solid #f74d48; /* f74d48 FFA73B*/
+}
+
+.rtl .timeline .event::before {
+    left: 0;
+    right: -170px;
+}
+
+.rtl .timeline .event::after {
+    left: 0;
+    right: -55.8px;
+}
 .toast{
     background: #f74d48;
     border-color: #FFFFFF;
 } 
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #2e343a; }
-    ::-webkit-scrollbar-thumb { background: #f74d48; }
-    ::-webkit-scrollbar-thumb:hover { background: #f74d48; }              
+/*.navigation__sub>a:before {
+    content: "\f278";
+}
+.navigation__sub>a:after {
+    content: "\f273";
+}*/
+    .insane {
+    color: #861bc4;}
+         
 </style>
     <body>
         <div>
@@ -101,14 +300,28 @@
                 </div>
 
                 <ul class="top-nav">
-                  
+                      <li class="d-xl-none">
+                        <a class="top-nav__search" href="#" data-toggle="collapse" data-target="#cLV"> <i class="zwicon-search"></i></a>
+                    </li>
+
+                    <li class="d-xl-none">
+                        <a data-notification="#notifications-messages" href="#" data-toggle="modal" data-target="#myModalInbox"><i class="zwicon-mail" data-toggle="modal" data-target="#myModalInbox"></i></a>
+                    </li>
+
+                    <li class="d-xl-none">
+                        <a data-notification="#notifications-alerts" href="#" data-toggle="modal" data-target="#myModalNews"><i class="zwicon-bell" data-toggle="modal" data-target="#myModalNews"></i></a>
+                    </li>
+
+                    <li class="d-none d-sm-block d-xl-none">
+                        <a data-notification="#notifications-tasks" href="#"><i class="zwicon-task"></i></a>
+                    </li>
                 </ul>
-               
-                <small>
+                       <small style="margin-top: 13px;">
                 ( <?php if($user->getFromTable_MyId("admin", "users") == "3") 
                 { echo "Founder"; }if($user->getFromTable_MyId("admin", "users") == "2") 
                 { echo "Moderator"; }if($user->getFromTable_MyId("admin", "users") == "1") 
                 { echo "Administrator"; }if ($user->getFromTable_MyId("admin", "users") == "0") { echo "Member"; }?> )</small>
+                
                 <div class="user dropdown">
                     <a data-toggle="dropdown" class="d-block" href="#">
                         <img class="user__img" src="<?php echo $user->getFromTable_MyId("pic", "users"); ?>" alt="">
@@ -116,16 +329,16 @@
                     <div class="dropdown-menu dropdown-menu-right">
                         <!-- <div class="dropdown-header"><?php echo $user->getFromTable_MyId("username", "users"); ?></div> -->
                         <a class="dropdown-item" href="profile.php"><i class="zmdi zmdi-account"></i> View Profile</a>
-                        <a class="dropdown-item" href="usersettings.php"><i class="zmdi zmdi-settings"></i> Settings</a>
+                        <a class="dropdown-item" href="settings.php"><i class="zmdi zmdi-settings"></i> Settings</a>
                         <a class="dropdown-item" href="sign_out.php"><i class="zmdi zmdi-time-restore"></i> Logout</a>
                     </div>
                 </div>
             </div>
 
             <div class="toggles d-none d-xl-block">
-                <a href="#" data-notification="#notifications-messages"><i class="zwicon-mail"></i></a>
-                <a href="#" data-notification="#notifications-alerts"><i class="zwicon-bell"></i></a>
-                <a href="#" data-notification="#notifications-tasks"><i class="zwicon-task"></i></a>
+                <a data-notification="#notifications-messages" data-toggle="modal" data-target="#myModalInbox"><i class="zwicon-mail" data-toggle="modal" data-target="#myModalInbox"></i></a>
+                <a data-notification="#notifications-alerts" data-toggle="modal" data-target="#myModalNews"><i class="zwicon-bell" data-toggle="modal" data-target="#myModalNews"></i></a>
+                <a data-notification="#notifications-tasks" data-toggle="collapse" data-target="#cLV"><i class="zwicon-search"></i></a>
             </div>
 
         </header>
@@ -144,22 +357,133 @@
                 <header class="content__title">
                     <h1>Dashboard<small></small></h1>
                 </header>
+
+            <!-- Modal -->
+              <div class="modal fade" id="myModalInbox" role="dialog">
+                <div class="modal-dialog modal-lg">
+                
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      
+                      <h4 class="modal-title">Inbox Of <?= $user->getFromTable_MyId("username", "users");?> </h4>
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                      <p><!-- <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Timeline</h6>
+                                        <div id="content"> -->
+                                            <ul class="timeline">
+                                                <li class="event" data-date="12:30 - 1:00pm">
+                                                    <h3>Inbox</h3>
+                                                    <p>Your inbox will come here with email overview.</p>
+                                                </li>
+                                                <!-- <li class="event" data-date="2:30 - 4:00pm">
+                                                    <h3>Opening Ceremony</h3>
+                                                    <p>Get ready for an exciting event, this will kick off in amazing fashion with MOP &amp; Busta Rhymes as an opening show.</p>
+                                                </li>
+                                                <li class="event" data-date="5:00 - 8:00pm">
+                                                    <h3>Main Event</h3>
+                                                    <p>This is where it all goes down. You will compete head to head with your friends and rivals. Get ready!</p>
+                                                </li>
+                                                <li class="event" data-date="8:30 - 9:30pm">
+                                                    <h3>Closing Ceremony</h3>
+                                                    <p>See how is the victor and who are the losers. The big stage is where the winners bask in their own glory.</p>
+                                                </li> -->
+                                            </ul>
+                                       <!--  </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+
+              <!-- Modal -->
+                  <div class="modal fade" id="myModalNews" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                    
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          
+                          <h4 class="modal-title" style="color: #f74d48;">Newsfeed</h4>
+                          <button type="button" class="close" data-dismiss="modal" style="color: #f74d48;">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                          <p>
+                              <ul class="timeline">
+                                <?php
+                                $query = $con->db->prepare("SELECT * FROM `news` ORDER BY date DESC");
+                                $query->execute();
+                                $res = $query->fetchAll();
+                                foreach($res as $row)
+                                {
+                                echo '
+                                    <li class="event" data-date="'.$row['date'].'">
+                                        <h3>'.$row['title'].'</h3>
+                                        <p>'.$row['message'].'</p>
+                                    </li>
+                                    
+                                ';
+                                 }
+                                 ?>
+                                   
+                                </ul>
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </div>
                 
                 <div class="row">
+                    <div class="collapse col-md-12" id="cLV">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">search on webiste</h4>
+                                    <form>
+                                        <div class="form-group">
+                                            <input class="form-control" type="text" size="30" onkeyup="showResult(this.value)" placeholder="Search Criteria">
+
+                                            <!-- <div class="form-group"> -->
+                                                <div id="livesearch" class="livesearch" style="border: none;"></div>
+                                        <!-- </div> -->
+                                        </div>
+                                    </form> 
+                                    <button type="button" class="btn btn-primary btn-block" data-toggle="collapse" data-target="#cLV">Close</button>
+                                </div>
+                            </div>
+                        </div>
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-body">
                                 <h4 class="card-title">Welcome!</h4>
-                                <h6 class="card-subtitle">To out brand new website.</h6>
+                                <h6 class="card-subtitle">To our brand new website.</h6>
                                 <br>
                                 <h6 class="card-subtitle"></h6>
                                 <br>
-                                <h6 class="card-subtitle">U can Visit Our Discord and <a href="https://discord.gg/ZWEhSgj">Click Here...</a>you can join us for support tool pm a admin for more info</h6>
+                                <h6 class="card-subtitle">U can Visit Our Discord <a href="https://discord.gg/ZWEhSgj">Here</a> For Full Support Of Our Products</h6>
                                 <br>
                                 <h6 class="card-subtitle">AnGerNetwork is always being updated for the best experience and tools for you guys</h6>
                                 <br>
-                                <h6 class="card-subtitle">If the site isn't responding, y can <a href="sign_in.php">re-login...</a> here.</h6>
-                                <br>
+                                <!-- <h6 class="card-subtitle">If the site isn't responding, y can <a href="sign_in.php">re-login...</a> here.</h6>
+                                <br> -->
                                  <h6 class="card-subtitle">If you prefer Bitcoin payment method, no worries it is coming up!</h6>
                                 <br>
                                  <h6 class="card-subtitle">We have added blacklisting. what does it mean? When someone tries to resolve you or tries to grab your ip, the output will be 'blacklisted'. nobody is able to get your ip while they are using one of our products.</h6>
@@ -183,8 +507,9 @@
                                 	 <h6 class="card-subtitle">Discord bot: AnGerBot - Includes: resolvers, stresser, port scanner, iplookup and more <a href="https://discord.com/oauth2/authorize?client_id=670575563429380097&permissions=8&scope=bot">Bot link to add it to your server</a></h6>   
                                 <br>
                                     <h6 class="card-subtitle">Port Scanner - IP Ping - Name Editor - Geolocation Tool - PSN Resolver - PSN Name Checker</h6>   
-                                <br>   
-                                	 <h6 class="card-subtitle">Grab yourself that deal PM For your tool payment *Staff AnGerNetwork*</h6>   
+                                <!-- <br>   
+                                	 <h6 class="card-subtitle">Grab yourself that deal PM For your tool payment</h6>  -->
+                                     
                             </div>
                         </div>
                     </div>
@@ -236,7 +561,7 @@
 
                     <div class="card">
                     <div class="card-body">
-                        <h6>AnGerNetwork Tool</h6>
+                        <h6>AnGerNetwork</h6>
                         <br>
                         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                             <ol class="carousel-indicators">
@@ -247,7 +572,7 @@
 
                             <div class="carousel-inner" role="listbox">
                                 <div class="carousel-item active">
-                                    <img src="assets/img/images/gta.jpg" alt="First slide">
+                                    <img src="assets/img/images/AnGerNetworkBackGround.jpg" alt="First slide">
                                 </div>
                                 <div class="carousel-item">
                                     <img src="https://angernetwork.dev/beta/assets/img/images/angerstresser.PNG" alt="Second slide">
@@ -270,9 +595,9 @@
     </div>
 </div>
     
-<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By AnGer Protection )
     <nav class="footer__menu">
-        <a  href="https://insane-dev.xyz/index.php">Home</a>
+        <a  href="https://angernetwork.dev/beta/index.php">Home</a>
         <a  href="https://discord.gg/c9STfn7">Discord</a>
         <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
         <a  href="https://">VPN coming soon</a>
@@ -298,6 +623,17 @@
         <script src="assets/vendors/fullcalendar/core/main.min.js"></script>
         <script src="assets/vendors/fullcalendar/daygrid/main.min.js"></script>
         <script src="assets/vendors/lightgallery/js/lightgallery-all.min.js"></script>
+        <script src="assets/toastr.min.js"></script>
+        <script src="assets/scripts/login.js"></script>
+        <?php 
+        if($noadmin == '1' || $noadmin == 1)
+        {
+            echo '<script>toastr.error("You have to be an admin to visit that page. Your action will be logged");
+            </script>';
+            unset($_SESSION['no-admin']);
+        }
+        unset($_SESSION['no-admin']);
+        ?>
         <!-- Site Functions & Actions -->
         <script src="assets/js/app.min.js"></script>
     </body>

@@ -33,18 +33,28 @@
 
         <title>AnGerNetwork - Dash</title>
 
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png " type="image/x-icon" />
         <!-- Vendors -->
         <link href="../assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="../assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
         <link href="../assets/vendors/overlay-scrollbars/OverlayScrollbars.min.css" rel="stylesheet">
         <link href="../assets/vendors/fullcalendar/core/main.min.css" rel="stylesheet">
         <link href="../assets/vendors/fullcalendar/daygrid/main.min.css" rel="stylesheet">
+        <link href="../assets/toastr.min.css" rel="stylesheet">
         <link href="../assets/css/app.min.css" rel="stylesheet">
     </head>
 <style> 
 .toast{
-    background: #861bc4;
+    background: #5e00da;
+    border-color: #f74d48;
+} 
+.toast-error{
+    background: #f74d48;
+    border-color: #f74d48;
+} 
+.toast-success{
+    background: #66ff66;
+    border-color: #66ff66;
 } 
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #2e343a; }
@@ -129,39 +139,51 @@
                                 <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="1" name="1" <?php echo $user->getMenuSettingStatus(1); ?>><span></span> Community Chat
+                                            <input type="checkbox" class="js-switch" id="1" name="1" <?php echo $user->getMenuSettingStatus(1); ?> onclick="terms_change(this)"><span></span> Community Chat
                                         </label>
                                     </div>
                                     <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="2" name="2" <?php echo $user->getMenuSettingStatus(2); ?>><span></span> Logins
+                                            <input type="checkbox" class="js-switch" id="2" name="2" <?php echo $user->getMenuSettingStatus(2); ?> onclick="terms_change(this)"><span></span> Logins
                                             </label>
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="form-group">
                                             <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="3" name="3" <?php echo $user->getMenuSettingStatus(3); ?>><span></span> Registrations
+                                            <input type="checkbox" class="js-switch" id="3" name="3" <?php echo $user->getMenuSettingStatus(3); ?> onclick="terms_change(this)"><span></span> Registrations
                                         </label>
                                     </div>
                                     <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="4" name="4" <?php echo $user->getMenuSettingStatus(4); ?>><span></span> Downloads
+                                            <input type="checkbox" class="js-switch" id="4" name="4" <?php echo $user->getMenuSettingStatus(4); ?> onclick="terms_change(this)"><span></span> Downloads
                                             </label>
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
                                     <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="5" name="5" <?php echo $user->getMenuSettingStatus(5); ?>><span></span> Support
+                                            <input type="checkbox" class="js-switch" id="5" name="5" <?php echo $user->getMenuSettingStatus(5); ?> onclick="terms_change(this)"><span></span> Support
                                             </label>
                                         </div>
                                     <div class="form-group">
                                         <label class="css-input switch switch-primary">
-                                            <input type="checkbox" class="js-switch" id="6" name="6" <?php echo $user->getMenuSettingStatus(6); ?>><span></span> Plan Store
+                                            <input type="checkbox" class="js-switch" id="6" name="6" <?php echo $user->getMenuSettingStatus(6); ?> onclick="terms_change(this)"><span></span> Plan Store
                                             </label>
                                         </div>
-                                    </div>                                       
+                                    </div>
+                                    <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="css-input switch switch-primary">
+                                            <input type="checkbox" class="js-switch" id="7" name="7" <?php echo $user->getMenuSettingStatus(7); ?> onclick="terms_change(this)"><span></span> Stresser
+                                            </label>
+                                        </div>
+                                    <div class="form-group">
+                                        <label class="css-input switch switch-primary">
+                                            <input type="checkbox" class="js-switch" id="8" name="8" <?php echo $user->getMenuSettingStatus(8); ?> onclick="terms_change(this)"><span></span> Nothing
+                                            </label>
+                                        </div>
+                                    </div>                                        
                                     </div>
                                 <div class="form-group">
                                     <center><button type="submit" class="btn btn-primary btn-block" name="save" id="save">Save Settings</button></center>
@@ -202,7 +224,29 @@
         <script src="../assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
         <script src="../assets/vendors/fullcalendar/core/main.min.js"></script>
         <script src="../assets/vendors/fullcalendar/daygrid/main.min.js"></script>
-
+        <script src="../assets/toastr.min.js"></script>
+<script>
+    function terms_change(checkbox){
+        document.getElementById("save").style.background='#f74d48';
+        toastr.error('there are changes please save them before leaving the page');
+        /*if(checkbox.checked){
+            // alert('Checkbox has been ticked!');
+            document.getElementById("save").style.background='#f74d48';
+            toastr.error('there are changes please save them before leaving the page');
+        }
+        //If it has been unchecked.
+        else{
+            alert('Checkbox has been unticked!');
+        }*/
+    }
+</script>
+<?php
+if(isset($_POST['save'])){
+        
+        echo '<script>toastr.success("Successfully saved the changes!");
+            </script>';
+    }
+    ?>
         <!-- Site Functions & Actions -->
         <script src="../assets/js/app.min.js"></script>
     </body>

@@ -3,13 +3,23 @@ date_default_timezone_set('Australia/Brisbane');
 include "database.php";
 include "emoji.php";
 	    class user extends database{
-
+		private $actual_url; 
+		private $useridactive;
 		public function __construct(){
+			global $ACTUALURL;
+			global $USERACTIVE;
+			$actual_url = $ACTUALURL;
 			$this->connect();
+		}
+
+		public function lastUrl($url)
+		{
+			return $url;
 		}
 		public function initChecks(){
             $this->update("users", array("lastActive"=>date("Y-m-d"), "latestip"=>$_SERVER['HTTP_CF_CONNECTING_IP']), "id", $_SESSION['id']);
 			if(!$_SESSION['id']){
+				$_SESSION['last-url'] = $actual_url;
 				header('Location: sign_in.php');
 			}else{
 				$query = $this->db->prepare("SELECT * FROM `bans` WHERE `userid` = :id");
@@ -28,6 +38,7 @@ include "emoji.php";
 					$result = $query->fetch(PDO::FETCH_ASSOC);
 					if($result['username'] == NULL)
 					{
+						$_SESSION['last-url'] = $actual_url;
 	    				header('Location: sign_in.php');
 					}
 				}
@@ -50,6 +61,12 @@ include "emoji.php";
 	    }
 		public function getFromTable_ThisUsername($what, $table, $username){
 			return $this->select($what, $table, "username","id", $username, $id)[0][0];
+		}
+		public function testuidbyname($username){
+			$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :uname");
+			$query->execute(array('uname' =>$username));
+			$uid = $query->fetchAll();
+			return $uid['id'];
 		}
 		public function getFromTable($what, $table, $where, $equals){
 			return $this->select($what, $table, $where, $equals)[0][0];
@@ -178,6 +195,43 @@ include "emoji.php";
 			{
 				return "";
 			}
+		}
+		public function getUserHasTineUrl()
+		{
+			$result = $this->db->prepare("SELECT * FROM `tiny_url` WHERE `id` = :id"); 
+    		$result->execute(array("id"=>$_SESSION['id']));
+    		$row = $result->fetchAll();
+    		if($row['id'])
+    		{
+    			return $row['url'];
+    		}
+    		else 
+    		{
+    			return "";
+    		}
+		    //return file_get_contents('http://tinyurl.com/api-create.php?url=' . $url);
+		}
+		public function createTineUrl()
+		{
+			$turl = file_get_contents('http://tinyurl.com/api-create.php?url=https://www.angernetwork.dev/beta/logip.php?id=' . $_SESSION['id']);
+			$this->insert_query("tiny_url", array(
+				"userid"=>$_SESSION['id'],
+				"url"=>$turl				
+			));
+
+			return "inserted";
+			// $result = $this->db->prepare("INSERT INTO `tiny_url` (`userid`,`url`,) VALUES (:userid, :url)"); 
+   //  		$result->execute(array("userid"=>$_SESSION['id'], "url"=>$turl));
+   //  		$row = $result->fetchAll();
+   //  		if($row['id'])
+   //  		{
+   //  			return $row['url'];
+   //  		}
+   //  		else 
+   //  		{
+   //  			return "";
+   //  		}
+		    //return file_get_contents('http://tinyurl.com/api-create.php?url=' . $url);
 		}
 		public function isOnline()
 		{   $result = $this->db->prepare("SELECT count(*) FROM `users` WHERE `id` = :id"); 
@@ -423,6 +477,20 @@ include "emoji.php";
 				return "Expired";
 			}
 		}
+		public function getUserNoAccesBooter()
+		{
+			$query = $this->db->prepare("SELECT * FROM `nobooter_access` WHERE `userid` = :id");
+			$query->execute(array("id"=>$_SESSION['id']));
+			$result = $query->fetch(PDO::FETCH_ASSOC);
+			if($result)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 		public function getAdminSparkle($heck){
 			if($this->getFromTable_ThisId("admin", "users", $heck) == "1"){
 				return "background: url(https://i.imgur.com/7F70N.gif);";
@@ -547,10 +615,17 @@ include "emoji.php";
 			echo '
 			    <li>
                     <a href="index.php"><i class="zwicon-home "></i>Dashboard</a>
-                </li> 
-                <li>
-                    <a href="attackhub.php"><i class="zwicon-deploy text-white"></i>AnGerStressr - Hub</a>
                 </li>
+            ';
+            if(!$this->getUserNoAccesBooter())
+        	{ 
+        		echo '
+	                <li>
+	                    <a href="attackhub.php"><i class="zwicon-deploy text-white"></i>AnGerStressr - Hub</a>
+	                </li>
+                ';
+            }
+        	echo '
                 <!--<li>
                     <a href="codes.php"><i class="zwicon-deploy text-white"></i>RTM Basic Codes</a>
                 </li>-->
@@ -558,23 +633,16 @@ include "emoji.php";
                     <a href="profile.php"><i class="zwicon-user-follow text-white"></i>Profile</a>
                 </li> 
                 <li>
-                    <a href="logger.php"><i class="zwicon-database text-white"></i>Logger</a>
+                    <a href="user_app.php"><i class="zwicon-download text-white"></i>Downloads</a>
+                </li> 
+                <li>
+                    <a href="blacklist.php"><i class="zwicon-eye-slash text-white"></i>Blacklist</a>
                 </li>
-                <li class="navigation__sub">
-                    <a  href="#"><i class="zwicon-activity text-white"></i>Panel</a>
-                        <ul>
-                            <li>
-                                <a  href="psn_history.php">PS3 History</a>
-                            </li>
-                            <li>
-                                <a  href="xbox_history.php">XBOX History</a>
-                            </li>
-                            <li>
-                                <a  href="user_app.php">Downloads</a>
-                            </li>
-                        </ul>
+                <!--<li>
+                    <a href="logger.php"><i class="zwicon-database text-white"></i>PSN+IP Logger</a>
+                </li>-->
                     <li class="navigation__sub">
-                        <a  href="#"><i class="zwicon-earth-alt text-white"></i>Misc - Tools</a>
+                        <a  href="" data-mae-action="submenu-toggle"><i class="zwicon-earth-alt text-white"></i>Misc & Tools</i></a>
                         <ul>
                             <li>
                                 <a  href="geo.php">Geo Lookup</a>
@@ -586,39 +654,71 @@ include "emoji.php";
                                 <a  href="xbox_resolver.php">XBOX Resolver</a>
                             </li>
                             <li>
+                                <a  href="psn_history.php">PS3 History</a>
+                            </li>
+                            <li>
+                                <a  href="xbox_history.php">XBOX History</a>
+                            </li>
+                            <li>
+			                    <a href="logger.php"><!--<i class="zwicon-database text-white"></i> -->PSN+IP Logger</a>
+			                </li>
+			                <li>
+			                    <a href="logger.php">Database Leaks</a>
+			                </li>
+                            <li>
                                 <a  href="whois.php">Whios / Domain Lookup</a>
                             </li>
                             <li>
                                 <a  href="storage.php">IP Storage</a>
                             </li>
                             <li>
+                                <a  href="ping.php">IP Pinger</a>
+                            </li>
+                            <li>
                                 <a  href="port.php">Port Scanner</a>
+                            </li>
+                             <li>
+                                <a  href="iplogger.php">IP Logger</a>
                             </li>
                         </ul>
                     <li>    
                 <li>
+                    <a href="support.php"><i class="zwicon-info-circle text-white"></i>Support</a>
+                </li>
+                <li>
                     <a href="faq.php"><i class="zwicon-info-circle text-white"></i>F.a.q</a>
                 </li>
+                <!-- <li>
+                    <a href="settings.php"><i class="zwicon-cog text-white"></i>Settings</a>
+                </li> -->
             '; 
             if($this->isAdmin())
             {
 		        echo '
 		            <br>
                     <li>
-                        <a href="/beta/admin_panel/admin_dash.php"><i class="zwicon-home "></i>Admin Dash</a>
-                    </li>
-                    <li>
-                        <a href="/beta/admin_panel/admin_blacklist.php"><i class="zwicon-diamond text-white"></i>blacklist Logs</a>
-                    </li>
-                    <li>
-                        <a href="/beta/admin_panel/admin_resolver.php"><i class="zwicon-diamond text-white"></i>Resolved Logs</a>
-                    </li>           
-                    <li>
-                        <a href="/beta/admin_panel/users_logins.php"><i class="zwicon-diamond text-white"></i>Users Logins</a>
-                    </li> 
-                    <li>
-                        <a href="chat.php"><i class="zwicon-diamond text-white"></i>Chat</a>
-                    </li>   
+	                    <a href="/beta/admin_panel/admin_dash.php"><i class="zwicon-diamond "></i>Admin Dash</a>
+	                </li>
+	                <li>
+	                    <a href="/beta/admin_panel/admin_blacklist.php"><i class="zwicon-eye-slash text-white"></i>blacklist Logs</a>
+	                </li>
+	                <li class="navigation__sub">
+                        <a  href="" data-mae-action="submenu-toggle"><i class="zwicon-plus  text-white"></i>Admin Settings</i></a>
+                        <ul>
+                            <li>
+                                <a  href="/beta/admin_panel/admin_settings.php">Website Settings</a>
+                            </li>
+                            <li>
+                                <a  href="/beta/admin_panel/tool_settings.php">Tool Settings</a>
+                            </li>
+                        </ul>
+                    <li>            
+	                <li>
+	                    <a href="/beta/admin_panel/all_users.php"><i class="zwicon-users text-white"></i>All Users Overview</a>
+	                </li> 
+	                <li>
+	                    <a href="chat.php"><i class="zwicon-chat text-white"></i>Chat</a>
+	                </li>
 	            ';
 	        }
 	    }
@@ -642,16 +742,16 @@ include "emoji.php";
         {
 		    echo '
                 <li>
-                    <a href="/beta/admin_panel/admin_dash.php"><i class="zwicon-home "></i>Admin Dash</a>
+                    <a href="/beta/admin_panel/admin_dash.php"><i class="zwicon-diamond "></i>Admin Dash</a>
                 </li>
                 <li>
-                    <a href="/beta/admin_panel/admin_blacklist.php"><i class="zwicon-diamond text-white"></i>blacklist Logs</a>
+                    <a href="/beta/admin_panel/admin_blacklist.php"><i class="zwicon-eye-slash text-white"></i>blacklist Logs</a>
                 </li>
                 <li>
-                    <a href="/beta/admin_panel/admin_resolver.php"><i class="zwicon-diamond text-white"></i>Resolved Logs</a>
+                    <a href="/beta/admin_panel/admin_resolver.php"><i class="zwicon-window text-white"></i>Resolved Logs</a>
                 </li>           
                 <li>
-                    <a href="/beta/admin_panel/users_logins.php"><i class="zwicon-diamond text-white"></i>Users Logins</a>
+                    <a href="/admin_panel/all_users.php"><i class="zwicon-users text-white"></i>All Users Overview</a>
                 </li> 
                 <li>
                     <a href="chat.php"><i class="zwicon-chat text-white"></i>Chat</a>
@@ -672,26 +772,82 @@ include "emoji.php";
                 <li>
                     <a href="admin_dash.php"><i class="zwicon-diamond text-white"></i>Admin Dash</a>
                 </li> 
+                <li class="navigation__sub">
+                        <a  href="" data-mae-action="submenu-toggle"><i class="zwicon-plus text-white"></i>Admin Logs</i></a>
+                        <ul>
+                            <li>
+                                <a  href="logs_noadmin.php">No Admin Logs</a>
+                            </li>
+                            <li>
+                                <a  href="logs_rbooter.php">Removed Booter Logs</a>
+                            </li>
+                            <li>
+                                <a  href="logs_booter.php">Booter Logs</a>
+                            </li>
+                              <li>
+                                <a  href="logs_login.php">Sign In Logs</a>
+                            </li>
+                            <li>
+                                <a  href="logs_register.php">Register Logs</a>
+                            </li>
+                            <li>
+                                <a  href="logs_toolerror.php">Tool Error Logs</a>
+                            </li>
+                            <li>
+                                <a  href="logs_angerbot.php">AnGerBot Logs</a>
+                            </li>
+                            <li>
+                                <a  href="logs_staff.php">Staff Members Logs</a>
+                            </li>
+                            <!--<li>
+                                <a  href="storage.php">IP Storage</a>
+                            </li>
+                            <li>
+                                <a  href="ping.php">IP Pinger</a>
+                            </li>
+                            <li>
+                                <a  href="port.php">Port Scanner</a>
+                            </li>
+                             <li>
+                                <a  href="iplogger.php">IP Logger</a>
+                            </li>-->
+                        </ul>
+                    <li> 
                 <li>
-                    <a href="admin_apps.php"><i class="zwicon-diamond text-white"></i>Admin Downloads</a>
+                    <a href="admin_apps.php"><i class="zwicon-download text-white"></i>Admin Downloads</a>
                 </li>
                 <li>
-                    <a href="admin_clogs.php"><i class="zwicon-diamond text-white"></i>Admin Changelogs</a>
+                    <a href="admin_clogs.php"><i class="zwicon-archive text-white"></i>Admin Changelogs</a>
                 </li> 
                 <li>
-                    <a href="admin_news.php"><i class="zwicon-diamond text-white"></i>Admin News</a>
+                    <a href="admin_plans.php"><i class="zwicon-store text-white"></i>Admin Plans</a>
                 </li> 
                 <li>
-                    <a href="admin_payed.php"><i class="zwicon-diamond text-white"></i>Admin Payments</a>
+                    <a href="admin_news.php"><i class="zwicon-broadcast text-white"></i>Admin News</a>
+                </li> 
+                <li>
+                    <a href="admin_payed.php"><i class="zwicon-coin text-white"></i>Admin Payments</a>
                 </li>
                 <li>
-                    <a href="admin_settings.php"><i class="zwicon-diamond text-white"></i>Web Settings</a>
+                    <a href="admin_blacklist.php"><i class="zwicon-eye-slash text-white"></i>blacklist Logs</a>
+                </li>
+                <li>
+                    <a href="all_users.php"><i class="zwicon-users text-white"></i>All Users Overview</a>
+                </li>
+                <li>
+                    <a href="all_tickets.php"><i class="zwicon-note text-white"></i>Tickets</a>
+                </li>
+                <li>
+                    <a href="admin_settings.php"><i class="zwicon-cog text-white"></i>Web Settings</a>
                 </li> 
                 <li>
-                    <a href="admin_resolver.php"><i class="zwicon-diamond text-white"></i>Resolver Logs</a>
+                    <a href="tool_settings.php"><i class="zwicon-cog text-white"></i>Tool Settings</a>
                 </li> 
                 <li>
-                    <a href="users_logins.php"><i class="zwicon-diamond text-white"></i>coming soon</a>
+                    <a href="admin_resolver.php"><i class="zwicon-window text-white"></i>Resolver Logs</a>
+                </li> 
+                <li>
+                    <a> <!--href="users_logins.php"--><i class="zwicon-bookmark text-white"></i>coming soon</a>
                 </li>  
 		        ';
 			}
@@ -799,6 +955,37 @@ include "emoji.php";
 		{
 			 $query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :license");
 			 $query->execute(array("license"=>$id));
+			 $result2 = $query->fetch(PDO::FETCH_ASSOC);
+			 if($result2)
+			 {
+                $today = date("Y-m-d H:i:s");
+                $date = $result2['expiry_date'];
+                $date1 = new DateTime($result2['expiry_date']);
+                $date2 = $date1->diff(new DateTime());
+				$lol = "366";
+				 if($date2->days > $lol)
+				{
+					return "Lifetime";
+				}
+                else if ($date > $today)
+                {
+                    return $date2->days.' Day(s)';
+                }
+
+                else
+                {
+                	return "Expired";
+                }
+			 }
+			 else
+			 {
+                return "Error";
+			 }
+		}
+		public function getUsertimeByName($name)
+		{
+			 $query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+			 $query->execute(array("username"=>$name));
 			 $result2 = $query->fetch(PDO::FETCH_ASSOC);
 			 if($result2)
 			 {
@@ -2090,6 +2277,16 @@ include "emoji.php";
 		}
         public function getMenuSettingStatus($value){
 			$query = $this->db->prepare("SELECT * FROM `websiteSettings` WHERE `id` = :id");
+			$query->execute(array("id"=>"1"));
+			$res = $query->fetch(PDO::FETCH_ASSOC);
+			if($res[$value] == "1"){
+				return "checked";
+			}else{
+				return "";
+			}
+		}
+		public function getToolSettingStatus($value){
+			$query = $this->db->prepare("SELECT * FROM `toolSettings` WHERE `id` = :id");
 			$query->execute(array("id"=>"1"));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res[$value] == "1"){

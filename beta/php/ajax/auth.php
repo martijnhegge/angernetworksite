@@ -19,6 +19,8 @@
 			    break;
 		    case "verify": echo $auth->UserVerify($_POST['verifyid']);
 			    break;
+		    case "ts": echo $auth->SaveToolSettings($_POST['id'],$_POST['value']);
+			    break;
 		    //case "resendreg": echo $resendreg->resendMail($_POST['user']);
 		    	//break;
 		}

@@ -7,7 +7,11 @@
     $con->connect();
     $message = '';
     $testshort = "test";
-    
+    //$getlasturl = $_SESSION['last_page'];
+    /*if ($getlasturl == "")
+    {
+        $getlasturl = 'index.php';
+    }*/
     
 ?>
 <!DOCTYPE html>
@@ -17,7 +21,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>AnGerNetwork - Auth</title>
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="assets/vendors/zwicon/zwicon.min.css">
@@ -84,6 +88,7 @@
                         <label>Password</label>
                             <input type="password" class="form-control text-center" placeholder="Enter Password" required id="password" name="password"> 
                         </div>
+                        
                         <br>
                     <a onclick= "login(this)" class="btn btn-theme btn-block">Sign In</a>
                     <a class="btn btn-theme btn-block" href="sign_up.php">Sign Up</a>
@@ -108,6 +113,8 @@
 <script src="assets/scripts/login.js"></script>
 <script>
         function login(){
+            //var redirurl = document.getElementById("redirurl").value;
+            var lasturl = <?php echo $getlasturl;?>
         $.post('php/ajax/auth.php?action=login', $("#login-form").serialize(), function(data){   
                 switch(data){
                 case "verify": 
@@ -117,6 +124,7 @@
                 break;
                 case "success":
                     toastr.success("Success","Successfully Signed In. Thanks for using AnGerNetwork. Redirecting...");  
+
                     window.setTimeout(function() { window.location.href = 'index.php';}, 5000); 
                 break;
                 case "banned": 
@@ -138,6 +146,8 @@
                     toastr.error("Your Account Is Pending Activation Please Check Your Email Including Your Spam Folder Or Resend It By Using he Resend Button"); 
                     $("#resendmail").prop("hidden",false);
                 break;
+                default:
+                    toastr.error("Unknown Error"); 
                 } 
             });
         }

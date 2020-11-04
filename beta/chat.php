@@ -20,7 +20,7 @@
 
         <title>AnGerNetwork - Dash</title>
 
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="assets/vendors/zwicon/zwicon.min.css">
@@ -123,7 +123,15 @@
                    <div class="col-md-6">
                         <div class="card">
                             <div class="card-body block" style="height: auto;"> 
-                            <h4 class="card-title">Chat</h4>                 
+                            <h4 class="card-title">Chat</h4>   
+                            <?php
+                                $queryde = $con->db->prepare("SELECT * FROM `websiteSettings` WHERE `id` = :id");
+                                $queryde->execute(array("id"=>"1"));
+                                $resde = $queryde->fetch(PDO::FETCH_ASSOC);
+                                if($resde['1'] != "1"){
+                                     echo '<div class="alert alert-danger"><center>Chat Has Been Disabed By A Staff Member</div>';
+                                }else{
+                                    echo '             
                                 <div class="block block-themed">
                                 </div>
                                 <div class="block-content"  id="shoutboxy" style="height: 500px; overflow-y: scroll; background: #2e343a;">
@@ -137,6 +145,9 @@
                                 <div class="form-group">
                                 <a class="btn btn-theme btn-block" onclick="shout()" name="shout" id="shout" value="buy">Send Message</a>
                                 </div>
+                                ';
+                            }
+                            ?>
                             </div>
                         </div>
                     </div>

@@ -44,7 +44,7 @@
 
         <title>AnGerNetwork - Dash</title>
 
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
         <!-- Vendors -->
         <link href="assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
@@ -241,9 +241,9 @@
     </div>
 </div>
                     
-<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By AnGer Protection )
     <nav class="footer__menu">
-        <a  href="https://insane-dev.xyz/index.php">Home</a>
+        <a  href="https://angernetwork.dev/beta/index.php">Home</a>
         <a  href="https://discord.gg/c9STfn7">Discord</a>
         <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
         <a  href="https://">VPN coming soon</a>
@@ -251,28 +251,19 @@
 </footer>
 </section>
 </div>
-<!-- Vendors: Data tables -->
+<!-- Vendors -->
+        <script src="assets/vendors/jquery/jquery.min.js"></script>
+        <script src="assets/vendors/popper.js/popper.min.js"></script>
+        <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/vendors/overlay-scrollbars/jquery.overlayScrollbars.min.js"></script>
+
+        <!-- Vendors: Data tables -->
         <script src="assets/vendors/datatables/jquery.dataTables.min.js"></script>
         <script src="assets/vendors/datatables/datatables-buttons/dataTables.buttons.min.js"></script>
         <script src="assets/vendors/datatables/datatables-buttons/buttons.print.min.js"></script>
         <script src="assets/vendors/jszip/jszip.min.js"></script>
         <script src="assets/vendors/datatables/datatables-buttons/buttons.html5.min.js"></script>
 
-<!-- Vendors -->
-        <script src="assets/vendors/jquery/jquery.min.js"></script>
-        <script src="assets/vendors/popper.js/popper.min.js"></script>
-        <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-        <script src="assets/vendors/headroom/headroom.min.js"></script>
-        <script src="assets/vendors/overlay-scrollbars/jquery.overlayScrollbars.min.js"></script>
-        <script src="assets/vendors/flot/jquery.flot.js"></script>
-        <script src="assets/vendors/flot/jquery.flot.resize.js"></script>
-        <script src="assets/vendors/flot/flot.curvedlines/curvedLines.js"></script>
-        <script src="assets/vendors/sparkline/jquery.sparkline.min.js"></script>
-        <script src="assets/vendors/easy-pie-chart/jquery.easypiechart.min.js"></script>
-        <script src="assets/vendors/jqvmap/jquery.vmap.min.js"></script>
-        <script src="assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
-        <script src="assets/vendors/fullcalendar/core/main.min.js"></script>
-        <script src="assets/vendors/fullcalendar/daygrid/main.min.js"></script>
 <script>
         function Load_Resolver(){
         $("#return_result").html('<td class="text-center">Resolve A Gamertag</td><td class="text-center">Resolve A Gamertag</td><td class="text-center">Resolve A Gamertag</td><td class="text-center">Resolve A Gamertag</td><td class="text-center">Resolve A Gamertag</td><td class="text-center">Resolve A Gamertag</td>');    

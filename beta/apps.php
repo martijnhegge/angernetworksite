@@ -63,7 +63,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>AnGerNetwork - Auth</title>
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="assets/vendors/zwicon/zwicon.min.css">
@@ -184,7 +184,55 @@
                 </div>
                 <form method="POST">
                <div class="row price-table price-table--basic">
-                        <div class="col-md-4">
+                    <?php 
+                        $query = $con->db->prepare("SELECT * FROM `plans`");
+                        $query->execute();
+                        $res = $query->fetchAll();
+
+                        $queryde = $user->db->prepare("SELECT * FROM `websiteSettings` WHERE `id` = :id");
+                        $queryde->execute(array("id"=>"1"));
+                        $resde = $queryde->fetch(PDO::FETCH_ASSOC);
+                        if($resde['4'] != "1"){
+                            $de = 0;
+                            // echo '<div class="alert alert-danger"><center>Logins Have Been Disabed By A Staff Member</div>';
+                        }else{
+                            $de = 1;
+                        }
+
+                        foreach($res as $row){
+                            echo '
+                            <div class="col-md-4">
+                            <div class="price-table__item">
+                                <header class="price-table__header">
+                                    <div class="price-table__title">'.$row['title'].'</div>
+                                    <div class="price-table__desc">'.$row['description'].'</div>
+                                </header>
+                                <div class="price-table__price">
+                                    $'.$row['price'].' |
+                                    <small>'.$row['length'].'</small>
+                                </div>
+                                <ul class="price-table__info">
+                                    <li>Plan Length : '.$row['length'].'</li>
+                                    <li>'.$row['access'].'</li>
+                                    <li>'.$row['info'].'</li>
+                                    <li><img style="max-height: 100px; max-width: 80px"src="assets/img/paypal.png"></li>
+                                </ul>';
+                                if($de == 1){
+                                    echo '
+                                    <button onclick= "purchase(this)" class="btn price-table__action" name="'.$row['submit_id'].'" value="'.$row[''].'" >Select Plan</button>';
+                                }
+                                else 
+                                {
+                                    echo '<div class="alert alert-danger"><center>Purchase Has Been Disabled By A Staff Member</div>';
+                                }
+                                echo '
+                                
+                            </div>
+                        </div>
+                            ';
+                            }
+                        ?>
+                        <!-- <div class="col-md-4">
                             <div class="price-table__item">
                                 <header class="price-table__header">
                                     <div class="price-table__title">Free Trial</div>
@@ -320,18 +368,18 @@
                                     <li><img style="max-height: 100px; max-width: 80px"src="assets/img/paypal.png"></li>
                                 </ul>
                                 <button onclick= "purchase(this)" class="btn price-table__action" name="access_lifetime_year" value="submit_lifetime">Select Plan</button>
-                                <!-- <a href="#" id="submit_life_time" name="submit_life_time" class="price-table__action">Select Plan</a> -->
+                                <!-- <a href="#" id="submit_life_time" name="submit_life_time" class="price-table__action">Select Plan</a> --
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </form>
         </div>            
     </div>            
 </div>
-<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By AnGer Protection )
     <nav class="footer__menu">
-        <a  href="https://insane-dev.xyz/index.php">Home</a>
+        <a  href="https://angernetwork.dev/beta/index.php">Home</a>
         <a  href="https://discord.gg/c9STfn7">Discord</a>
         <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
         <a  href="https://">VPN coming soon</a>

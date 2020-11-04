@@ -7,7 +7,15 @@
     $con->connect();
     $user->initChecks();
     if(!$user->isAdmin()){
-        header("Location: ../dashboard.php?error=no-admin");
+        header("Location: ../index.php?error=no-admin");
+    }
+
+    if(isset($_POST['save'])){
+        $query = $con->db->prepare('INSERT INTO `changelogs` (`Title`, `Log`, `Poster`, `Version`, `program_id`)VALUES(:title, :log, :poster, :version, :pid)');
+        $query->execute(array('title'=>$_POST['title'],'log'=>$_POST['log'],'poster'=>$user->getFromTable_MyId("username", "users"),'version'=>$_POST['version'],'pid'=>$_POST['pid']));
+        echo '<script>toastr.success("Successfully saved plan!");
+            </script>';
+            unset($_POST['save']);
     }
 ?>
 <!DOCTYPE html>
@@ -19,7 +27,7 @@
 
         <title>AnGerNetwork - Dash</title>
 
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
         <!-- Vendors -->
         <link href="../assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="../assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
@@ -102,23 +110,87 @@
 
             <section class="content">
                 <header class="content__title">
-                    <h1>Dashboard<small></small></h1>
+                    <h1>changelog manager<small></small></h1>
                 </header>
           
                 <div class="row">
-                   
+                <div class="col-lg-6">
+                    <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"></h4>
+                        <h6 class="card-subtitle"></h6>
+                            <?php
+                                    $query2 = $con->db->prepare("SELECT changelogs.*, downloads.name FROM `changelogs` JOIN `downloads` ON downloads.id = changelogs.program_id ORDER BY `program_id` , `Version` ");
+                                    $query2->execute();
+                                    $res2 = $query2->fetchAll();
+                                    foreach($res2 as $row2){
+                                    echo ' <div class="accordion" id="accordionExample">
+                                        <div class="card">
+                                        <div class="card-header">
 
-                <div class="col-md-3">
-                        <div class="card stats">
-                            <div class="card-body">
-                                <h4 class="card-title">Your Tool Logins</h4>
-                                <h6 class="card-subtitle"></h6>          
+                                    <a data-toggle="collapse" data-parent="#accordionExample" data-target="#collapseOne'.$row2['id'].'">
+                                        <strong>'.$row2['name'].'</strong> | '.$row2['Title'].' '.$row2['Time'].' | <span class="pull-right">Version : '.$row2['Version'].'</span></a>
+                                        </h4>
+                                        </div>
+                                        <div id="collapseOne'.$row2['id'].'" class="collapse" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                               '.$row2['Log'].'
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    </div>
+                                    ';
+                                }
+                                    ?>
                         </div>
+                        <!-- </div> -->
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add changelog</h4>
+                        <h6 class="card-subtitle"></h6>
+                            <form method="POST">
+                                <div class="col-md-12">
+                                    
+                                    <div class="form-group">
+                                        <input class="form-control text-center" id="title" name="title" value="" type="text" placeholder="Title" />
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea class="form-control text-center" id="log" name="log" value="" type="text" placeholder="Log" /></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <input class="form-control text-center" id="version" name="version" value="" type="text" placeholder="1.0.0.0" />
+                                    </div>
+                                    <div class="form-group">
+                                        <select required id="pid" class="btn btn-theme btn-block grey dropdown-toggle" name="pid">
+                                        <?php
+                                            $queryd = $con->db->prepare("SELECT * FROM `downloads`");
+                                            $queryd->execute();
+                                            $resd = $queryd->fetchAll();
+                                            foreach($resd as $rowd){
+                                                echo '<option value="'.$rowd['id'].'" selected="selected" />'.$rowd['name'].' ';
+                                            }
+                                        ?>
+                                            <!-- <option value="1" selected="selected" />Projext Execution
+                                            <option value="2" selected="selected" />AnGerSPRX
+                                            <option value="3" selected="selected" />AnGerEngine -->
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                    <center><button type="submit" class="btn btn-primary btn-block" name="save" id="save">Save Changelog</button></center>
+                                    </div>
+                                </div>
+                            </form>    
+                        </div>
+                        <!-- </div> -->
                     </div>
                 </div>
             </div>
-        </div>            
-    </div>            
+        </div>
+    </div>
 </div>
 <footer class="footer">Copyright &copy; 2019 AnGerNetwork
     <nav class="footer__menu">

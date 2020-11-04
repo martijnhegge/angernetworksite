@@ -41,6 +41,18 @@
         echo "<center>Your IP Address Has Been Blacklisted From Our Website!</center>";
         exit();
     }
+    if($_GET['ipfl']){
+        $ip = htmlspecialchars($_GET['ipfl']);
+        if (filter_var($ip, FILTER_VALIDATE_IP)) 
+        {  
+           $server_data = json_decode(file_get_contents("https://insane-dev.xyz/json/?ip=".$ip));
+           $check_ip = json_decode(file_get_contents("https://json.geoiplookup.io/".$ip));
+        } 
+        else
+        {
+            $message = "<center>ERROR</center>";
+        }
+    }
     if(isset($_POST['search_ipaddress'])){
         $ip = htmlspecialchars($_POST['search_ip']);
         if (filter_var($ip, FILTER_VALIDATE_IP)) 
@@ -120,7 +132,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>AnGerNetwork - Dash</title>
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="assets/vendors/zwicon/zwicon.min.css">
@@ -137,10 +149,10 @@
     }
     .insane {
     color: #861bc4;}
-                ::-webkit-scrollbar { width: 8px; }
-                ::-webkit-scrollbar-track { background: #2e343a; }
-                ::-webkit-scrollbar-thumb { background: #861bc4; }
-                ::-webkit-scrollbar-thumb:hover { background: #861bc4; }              
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #2e343a; }
+    ::-webkit-scrollbar-thumb { background: #f74d48; }
+    ::-webkit-scrollbar-thumb:hover { background: #f74d48; }                
 </style>
     <body onload="initmap(this)">
         <!-- Page Loader -->
@@ -361,9 +373,9 @@
     </div>
 </div>
 
-<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By AnGer Protection )
     <nav class="footer__menu">
-        <a  href="https://insane-dev.xyz/index.php">Home</a>
+        <a  href="https://angernetwork.dev/beta/index.php">Home</a>
         <a  href="https://discord.gg/c9STfn7">Discord</a>
         <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
         <a  href="https://">VPN coming soon</a>

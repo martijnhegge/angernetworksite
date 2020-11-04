@@ -41,7 +41,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>User Account</title>
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png " type="image/x-icon" />
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="../assets/vendors/zwicon/zwicon.min.css">

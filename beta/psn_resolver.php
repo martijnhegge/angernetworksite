@@ -26,7 +26,7 @@
 
         <title>AnGerNetwork - Dash</title>
 
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
         <!-- Vendors -->
         <link href="assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
@@ -223,9 +223,9 @@
     </div>
 </div>
                     
-<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By AnGer Protection )
     <nav class="footer__menu">
-        <a  href="https://insane-dev.xyz/index.php">Home</a>
+        <a  href="https://angernetwork.dev/beta/index.php">Home</a>
         <a  href="https://discord.gg/c9STfn7">Discord</a>
         <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
         <a  href="https://">VPN coming soon</a>
@@ -254,11 +254,15 @@
         <script src="assets/vendors/jqvmap/jquery.vmap.min.js"></script>
         <script src="assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
         <script src="assets/vendors/fullcalendar/core/main.min.js"></script>
-        <script src="assets/vendors/fullcalendar/daygrid/main.min.js"></script>
+<script>
+        $(document).ready(function(){
+            Load_Resolver();
+                    });
+        </script>
 <script>
         function Load_Resolver()
         {
-            $("#psn_result").html('');    
+            //$("#psn_result").html('');    
             Stats();
         }
         function Stats() 
@@ -272,12 +276,12 @@
                     setInterval(Stats(), 1000);
                 }
             }
-            xmlhttp.open("GET","https://insane-dev.xyz/api/json/resolver.php?resolve_result=Statics", true);
+            xmlhttp.open("GET","https://insane-dev.xyz/beta/includes/resolver/function/resolver.php?resolve_result=Statics", true);
             xmlhttp.send();
         }
         function resolve_psn(query_responsetime) 
         {
-            $("#psn_result").html('');    
+            //$("#psn_result").html('');    
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function() 
             {
@@ -286,12 +290,12 @@
                     $("#psn_result").html(this.responseText);
                 }
             };
-            xmlhttp.open("POST", "https://insane-dev.xyz/api/?type=psniptool", true);
+            xmlhttp.open("POST", "https://insane-dev.xyz/beta/includes/resolver/function/resolver.php?resolve_result=psn", true);
             xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.send("name=" + query_responsetime);
+            xmlhttp.send("gamertag=" + query_responsetime);
         }
 </script>
-<script>
+<!-- <script>
         function Load_Resolver(){
         $("#return_result").html('');    
             Stats();}
@@ -314,7 +318,7 @@
 xmlhttp.open("POST", "https://insane-dev.xyz/api/json/resolver.php?resolve_result=psn", true);
 xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 xmlhttp.send("gamertag=" + query_responsetime);}
-</script>
+</script> -->
         <!-- Site Functions & Actions -->
         <script src="assets/js/app.min.js"></script>
     </body>

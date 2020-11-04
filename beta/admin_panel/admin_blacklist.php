@@ -42,7 +42,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>User Account</title>
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="../assets/vendors/zwicon/zwicon.min.css">
@@ -155,7 +155,8 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>User ID</th>
+                                        <th>Adder's User ID</th>
+                                        <th>Added By</th>
                                         <th>Username/Gamertag</th>
                                         <th>IP Address</th>
                                         <th>Value</th>
@@ -165,7 +166,7 @@
                                             </thead>
                                             <tbody>
                                             <?php 
-                                            $query = $con->db->prepare("SELECT * FROM `black_list`");
+                                            $query = $con->db->prepare("SELECT * FROM `blacklist`");
                                             $query->execute(array("id"=>$_SESSION['id']));
                                             $res = $query->fetchAll();
                                             foreach($res as $row){
@@ -174,7 +175,8 @@
                                                         <td>'.$row['ID'].'</td>
                                                         <td>'.$row['userid'].'</td>
                                                         <td>'.$row['username'].'</td>
-                                                        <td>'.$row['latestip'].'</td>
+                                                        <td>'.$row['name'].'</td>
+                                                        <td>'.$row['ip'].'</td>
                                                         <td>'.$row['value'].'</td>
                                                         <td>'.$row['time'].'</td>
                                                          ';

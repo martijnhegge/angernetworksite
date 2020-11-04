@@ -17,7 +17,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>User Account</title>
-        <link rel="shortcut icon" href="../assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png " type="image/x-icon" />
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="../assets/vendors/zwicon/zwicon.min.css">
@@ -115,7 +115,7 @@
 
             <section class="content">
                 <header class="content__title">
-                    <h1>Users Accounts<small></small></h1>
+                    <h1>Payments Overview<small></small></h1>
                 </header>
 
                 <div class="row">
@@ -131,31 +131,41 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Username</th>
-                                    <th>Email</th>
-                                    <th>HWID</th>
-                                    <th>Latest IP</th>
-                                    <th>Time Remain</th>
+                                    <th>Price Paid</th>
+                                    <th>Token</th>
+                                    <th>Payment ID</th>
+                                    <th>Status</th>
+                                    <th>Payment Email</th>
+                                    <th>Date of Payment</th>
+                                    <th>Time Added</th>
+                                    <th>Service</th>
                                     <th>Manage User</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <?php 
-                                            $query = $con->db->prepare("SELECT * FROM `users`");
+                                            $query = $con->db->prepare("SELECT * FROM `payments`");
                                             $query->execute();
                                             $res = $query->fetchAll();
                                             foreach($res as $row){
+
                                                 echo '
                                                     <tr>    
                                                         <td>'.$row['id'].'</td>
-                                                        <td>'.$row['username'].'</td>
-                                                        <td>'.$row['email'].'</td>
-                                                        <td>'.$row['hwid'].'</td>
-                                                        <td>'.$row['latestip'].'</td>
-                                                        <td>'.$user->getUsertime($row['id']).'</td>
+                                                        <td>'.$row['name'].'</td>
+                                                        <td>'.$row['price_paid'].'</td>
+                                                        <td>'.$row['token'].'</td>
+                                                        <td>'.$row['payment_id'].'</td>
+                                                        <td>'.$row['status'].'</td>
+                                                        <td>'.$row['paymentemail'].'</td>
+                                                        <td>'.$row['thedate'].'</td>
+                                                        <td>'.$row['added_time'].'</td>
+                                                        <td>'.$row['service'].'</td>
                                                         ';
+                                                        $uid = $row['name'];
                                                 echo '
                                                         <td>
-                                                            <a type="submit" class="btn btn-info btn-block" href="view_user.php?id='.$row['id'].'">Manage</a>
+                                                            <a type="submit" class="btn btn-info btn-block" href="view_user.php?id='.$user->getFromTable("id", "users", "username", $row['name']).'">Manage</a>
                                                         </td>
                                                     </tr>
                                                 ';

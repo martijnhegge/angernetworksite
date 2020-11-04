@@ -16,7 +16,7 @@
 
         <title>AnGerNetwork - Auth</title>
 
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon"/>
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon"/>
 
         <!-- Vendor styles -->
         <link rel="stylesheet" href="assets/vendors/zwicon/zwicon.min.css">
@@ -126,6 +126,9 @@
                     toastr.error('Error!',"Sorry, but the username is taken");
                      window.setTimeout(function() { }, 2000); 
                 break;
+                case "email_taken": 
+                    toastr.error('Error!',"Sorry, but the email is taken");
+                    break;
                 case "password_dm": 
                 toastr.error('Error!',"Sorry, but you're passwords dont match"); window.setTimeout(function() { }, 2000); 
                 break;
@@ -139,7 +142,7 @@
                 toastr.error("Please Complete The Captcha"); 
                 break;
                 case "spam": 
-                toastr.error("You Using A Spam Email Address, Please Use A Valid Email Address!"); 
+                toastr.error("You Are Using A Spam Email Address, Please Use A Valid Email Address!"); 
                 break;
                 case "iperror":
                 toastr.error("You can't have 2 accounts on the same IP!");

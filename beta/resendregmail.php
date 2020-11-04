@@ -30,8 +30,15 @@
 
             $verifylink = "https://www.angernetwork.dev/beta/verifyacc.php?id=".$result['verify_id']."";
 
+            $message = file_get_contents('mail_templates/registered.php'); 
+            $message = str_replace('%username%', $user, $message); 
+            $message = str_replace('%verlink%', $verifylink, $message); 
+/*            $message = str_replace('%lname%', $_POST['lname'], $message);
+            $message = str_replace('%sub%', $_POST['subject'], $message);
+            $message = str_replace('%prob%', $_POST['problem'], $message);*/
+
             $mail = new PHPMailer(true);
-            $mail->SMTPDebug = 2;                                 // Enable verbose debug output
+            $mail->SMTPDebug = 0;                                 // Enable verbose debug output
             $mail->isSMTP();                                      // Set mailer to use SMTP
             $mail->Host = 'mail.privateemail.com';  // Specify main and backup SMTP servers
             $mail->SMTPAuth = true;                               // Enable SMTP authentication
@@ -42,13 +49,13 @@
             $mail->isHTML(true);   
             $mail->setFrom('noreply@angernetwork.dev', 'AnGerNetwork');
             $mail->addAddress($email, $user);
-            $mail->AddCustomHeader('X-Confirm-Reading-To: tijntje9991@gmail.com');
-            $mail->AddCustomHeader('Return-Receipt-To: tijntje9991@gmail.com');
-            $mail->AddCustomHeader('Disposition-Notification-To: tijntje9991@gmail.com');
+            $mail->AddCustomHeader('X-Confirm-Reading-To: noreply@angernetwork.dev');
+            $mail->AddCustomHeader('Return-Receipt-To: noreply@angernetwork.dev');
+            $mail->AddCustomHeader('Disposition-Notification-To: noreply@angernetwork.dev');
             $mail->AddBcc('martijnhegge@outlook.com');
-            $mail->ConfirmReadingTo = "tijntje9991@gmail.com";
+            $mail->ConfirmReadingTo = "noreply@angernetwork.dev";
             $mail->Subject  = 'Activation Resend';
-            $mail->Body     = '<strong>AnGerNetwork</strong><br><br>To verify your account click this link:<br><a href="'.$verifylink.'">verify link</a>';
+            $mail->Body     = $message;//'<strong>AnGerNetwork</strong><br><br>To verify your account click this link:<br><a href="'.$verifylink.'">verify link</a>';
             if(!$mail->Send())
             {
                 echo "Mailer Error: " . $mail->ErrorInfo;//
@@ -60,5 +67,5 @@
                 //return "succes";
             }
         }
-    header("Location: sign_in.php");
+    header('Location: sign_in.php');
 ?>
