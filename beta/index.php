@@ -67,6 +67,7 @@
         <!-- Vendors -->
         <link href="assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
+        <link href="assets/vendors/fontawesome/css/all.css" rel="stylesheet">
         <link href="assets/vendors/overlay-scrollbars/OverlayScrollbars.min.css" rel="stylesheet">
         <link href="assets/vendors/fullcalendar/core/main.min.css" rel="stylesheet">
         <link href="assets/vendors/fullcalendar/daygrid/main.min.css" rel="stylesheet">
@@ -266,6 +267,17 @@ function showResult(str) {
     background: #f74d48;
     border-color: #FFFFFF;
 } 
+/*.navigation__sub>a:after, .navigation__sub>a:before {
+    position: absolute;
+    top: 14px;
+    color: #FFA73B;
+    font-family: Material-Design-Iconic-Font;
+    font-size: 17px;
+    right: 25px;
+    content: "\f067";
+    /*opacity: 0;*/
+    /*filter: alpha(opacity=0);*
+}*/
 /*.navigation__sub>a:before {
     content: "\f278";
 }
