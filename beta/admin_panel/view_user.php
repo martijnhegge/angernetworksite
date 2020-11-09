@@ -438,6 +438,8 @@
                                     <input type="text" class="form-control" value="<?php echo $user->getUsertime($id); ?>">
                                      <label>Booter Access</label>
                                     <input type="text" class="form-control" value="<?php echo $user->getUserbooter($id); ?>">
+                                    <label>Verified</label>
+                                    <input type="text" class="form-control" value="<?php echo $user->getFromTable_ThisId("verified", "users", $id); ?>" name="4">
                                     <label>Profile Picture URL</label>
                                     <input type="text" class="form-control" value="<?php echo $user->getFromTable_ThisId("pic", "users", $id); ?>" name="5">
                                     <label>Transaction ID</label>
