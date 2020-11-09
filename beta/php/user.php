@@ -735,6 +735,9 @@ include "emoji.php";
                     <a href="profile.php"><i class="zwicon-user-follow text-white"></i>Profile</a>
                 </li>
                 <li>
+                    <a href="support.php"><i class="zwicon-info-circle text-white"></i>Support</a>
+                </li>
+                <li>
                     <a href="faq.php"><i class="zwicon-info-circle text-white"></i>F.a.q</a>
                 </li>';
                     
@@ -1137,6 +1140,10 @@ include "emoji.php";
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
+		public function getPulledIPSCountPSNInsane(){
+    		$rowCount = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=COUNTPSN");
+    		return $rowCount;
+		}	
 		public function getPulledIPSCountPSN(){
 			$result = $this->db->prepare("SELECT count(*) FROM `PSNIPHISTORY`"); 
     		$result->execute();
