@@ -13,7 +13,11 @@
 
     if(isset($_POST['submitpsn']))
     {
-        $resolveOut = file_get_contents("https://insane-dev.xyz/beta/includes/resolver/function/resolver.php?resolve_result=psn&gamertag=".$_POST['gamertag']."");
+        $resolveOut = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=Resolve_PSN&GAMERTAG=".$_POST['gamertag']."");
+    }
+    if(isset($_POST['ippsn']))
+    {
+        $resolveOut = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=Resolve_PSNIP&ip=".$_POST['ip']."");
     }
 ?>
 <!DOCTYPE html>
@@ -138,7 +142,8 @@
                                 <input type="text" id="gamertag" name="gamertag" placeholder="Resolve A Gamertag!" class="form-control text-center">
                                 </div>
                                 <div class="form-group">
-                                <button type="button" onclick="resolve_psn(document.getElementById('gamertag').value)" name="submitpsn" class="btn btn-primary btn-block">Lookup an Gamertag to see details.</button>
+                                <button type="submit" name="submitpsn" class="btn btn-primary btn-block">Lookup an Gamertag to see details.</button>
+                                <!-- <button type="button" onclick="showResult(document.getElementById('gamertag').value)" name="submitpsn" class="btn btn-primary btn-block">Lookup an Gamertag to see details.</button> -->
                                 </div>
                             </form>
                             </div>
@@ -154,7 +159,8 @@
                                 <input type="text" id="ip" name="ip" placeholder="Resolve A IP!" class="form-control text-center">
                                 </div>
                                 <div class="form-group">
-                                <button type="button"onclick="playstation_ip(document.getElementById('ip').value)" class="btn btn-primary btn-block">Lookup an IP to see details.</button>
+                                <button type="submit" name="ippsn" class="btn btn-primary btn-block">Lookup an IP to see details.</button>
+                                <!-- <button type="button" onclick="playstation_ip(document.getElementById('ip').value)" class="btn btn-primary btn-block">Lookup an IP to see details.</button> -->
                                 </div>
                             </form>    
                             </div>
@@ -164,12 +170,12 @@
                      
                     <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Details.</h4>
+                        <h4 class="card-title"><?php if(!$resolveOut){?><?php } ?></h4>
                         <h6 class="card-subtitle"></h6>
-                        <h2>Results <small><?php echo $resolveOut; ?></small></h2>
+                        <h2><?php if($resolveOut){?>Result:<?php } ?></h2><br> <h6><?php echo $resolveOut; ?></h6>
                     </div>
-                    <div class="card__body text text-center" id="psn_result">
-                    <p class="text-center">Resolve Username to see details.</p>
+                    <div class="car-body text text-center" id="psn_result">
+                    <p class="text-center"><?php if(!$resolveOut){?>Resolve Username to see details.<?php } ?></p>
                     <!-- <div class="tab-pane fade" id="weblogins" role="tabpanel">
                         <div class="card">
                         <div class="card-body">
@@ -294,6 +300,26 @@
             xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xmlhttp.send("gamertag=" + query_responsetime);
         }
+        function showResult(str) {
+  var xmlhttp=new XMLHttpRequest();
+  xmlhttp.onreadystatechange=function() {
+    if (this.readyState==4 && this.status==200) {
+        // document.getElementById("livesearch").classList.add("form-control");
+      document.getElementById("psn_result").innerHTML=this.responseText;
+      /*document.getElementById("livesearch").style.border="1px solid #415969";
+      document.getElementById("livesearch").style.background="#1e2a31";
+      document.getElementById("livesearch").a.style.color="#7996a9";
+      document.getElementById("livesearch").style.borderRadius=".25rem";
+      document.getElementById("livesearch").style.fontSize="3em";*/
+/*      document.getElementById("livesearch").style.margin="10px";
+      document.getElementById("livesearch").style.padding="10px";
+      document.getElementById("livesearch").style.lineHeight="3";*/
+
+    }
+  }
+  xmlhttp.open("GET","https://insane-dev.xyz/beta/includes/API/?TYPE=Resolve_PSN&GAMERTAG="+str,true);
+  xmlhttp.send();
+}
 </script>
 <!-- <script>
         function Load_Resolver(){

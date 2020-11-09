@@ -13,7 +13,7 @@
     $message = '';
     $noadmin = $_SESSION['no-admin'];
 
-    
+    $rowCount = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=COUNTPSN");
     
     if(!in_array($_SERVER['HTTP_CF_CONNECTING_IP'], $whitelisted))
     {
@@ -533,7 +533,7 @@ function showResult(str) {
                                 <br>
                                     <h6 class="card-subtitle">Total Users : <?=$user->getUserCount(); ?></h6>   
                                 <br>
-                                    <h6 class="card-subtitle">Pulled PSN History : <?=$user->getPulledIPSCountPSN(); ?></h6>  
+                                    <h6 class="card-subtitle">Pulled PSN History : <?=$user->getPulledIPSCountPSNInsane(); ?></h6>  
                                 <br>
                                     <h6 class="card-subtitle">Pulled Xbox History : <?=$user->getPulledIPCountXbox(); ?></h6>      
                                 <br>
