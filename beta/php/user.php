@@ -648,6 +648,9 @@ include "emoji.php";
                                 <a  href="geo.php">Geo Lookup</a>
                             </li>
                             <li>
+                                <a  href="skype.php">Skype Resolver</a>
+                            </li>
+                            <li>
                                 <a  href="psn_resolver.php">PSN Resolver</a>
                             </li>
                               <li>
@@ -802,10 +805,13 @@ include "emoji.php";
                             <li>
                                 <a  href="logs_staff.php">Staff Members Logs</a>
                             </li>
-                            <!--<li>
-                                <a  href="storage.php">IP Storage</a>
+                            <li>
+                                <a  href="logs_skype.php">Skype Resolver Logs</a>
                             </li>
                             <li>
+                                <a  href="logs_psnresolver.php">PSN Resolver Logs</a>
+                            </li>
+                            <!--<li>
                                 <a  href="ping.php">IP Pinger</a>
                             </li>
                             <li>
@@ -830,6 +836,9 @@ include "emoji.php";
                 </li> 
                 <li>
                     <a href="admin_payed.php"><i class="zwicon-coin text-white"></i>Admin Payments</a>
+                </li>
+                <li>
+                    <a href="admin_userinbox.php"><i class="zwicon-send text-white"></i>Admin Users Inbox</a>
                 </li>
                 <li>
                     <a href="admin_blacklist.php"><i class="zwicon-eye-slash text-white"></i>blacklist Logs</a>
@@ -1141,7 +1150,7 @@ include "emoji.php";
     		return $rowCount;
 		}
 		public function getPulledIPSCountPSNInsane(){
-    		$rowCount = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=COUNTPSN");
+    		$rowCount = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=COUNTPSNANGER");
     		return $rowCount;
 		}	
 		public function getPulledIPSCountPSN(){
