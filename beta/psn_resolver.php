@@ -13,11 +13,39 @@
 
     if(isset($_POST['submitpsn']))
     {
-        $resolveOut = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=Resolve_PSN&GAMERTAG=".$_POST['gamertag']."");
+        if(strtoupper($_POST['gamertag']) == strtoupper("QMT-AnGer") || strtoupper($_POST['gamertag']) == strtoupper("QMT-AnGer-"))
+        {
+            $resolveOut = "This PSN is blacklisted";
+        }
+        else 
+        {
+            $resolveOut = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=Resolve_PSN&GAMERTAG=".$_POST['gamertag']."");
+        }
+        $con->insert_query("psnresolver_log", array(
+            "userid"=>$_SESSION['id'],
+            "username"=>$user->getFromTable_MyId("username", "users"),
+            "type"=>"PSN->IP",
+            "value"=>$_POST['gamertag'],
+            "browser"=>$user->getTheBrowser()
+        ));
     }
     if(isset($_POST['ippsn']))
     {
-        $resolveOut = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=Resolve_PSNIP&ip=".$_POST['ip']."");
+        if($_POST['ip'] == "62.45.154.176")
+        {
+            $resolveOut = "This IP is blacklisted";
+        }
+        else 
+        {
+            $resolveOut = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=Resolve_PSNIP&ip=".$_POST['ip']."");
+        }
+        $con->insert_query("psnresolver_log", array(
+            "userid"=>$_SESSION['id'],
+            "username"=>$user->getFromTable_MyId("username", "users"),
+            "type"=>"IP->PSN",
+            "value"=>$_POST['ip'],
+            "browser"=>$user->getTheBrowser()
+        ));
     }
 ?>
 <!DOCTYPE html>
