@@ -195,6 +195,22 @@
         <script src="../assets/vendors/jszip/jszip.min.js"></script>
         <script src="../assets/vendors/datatables/datatables-buttons/buttons.html5.min.js"></script>
 
+                <!-- Vendors -->
+        <script src="../assets/vendors/jquery/jquery.min.js"></script>
+        <script src="../assets/vendors/popper.js/popper.min.js"></script>
+        <script src="../assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+        <script src="../assets/vendors/headroom/headroom.min.js"></script>
+        <script src="../assets/vendors/overlay-scrollbars/jquery.overlayScrollbars.min.js"></script>
+        <script src="../assets/vendors/flot/jquery.flot.js"></script>
+        <script src="../assets/vendors/flot/jquery.flot.resize.js"></script>
+        <script src="../assets/vendors/flot/flot.curvedlines/curvedLines.js"></script>
+        <script src="../assets/vendors/sparkline/jquery.sparkline.min.js"></script>
+        <script src="../assets/vendors/easy-pie-chart/jquery.easypiechart.min.js"></script>
+        <script src="../assets/vendors/jqvmap/jquery.vmap.min.js"></script>
+        <script src="../assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
+        <script src="../assets/vendors/fullcalendar/core/main.min.js"></script>
+        <script src="../assets/vendors/fullcalendar/daygrid/main.min.js"></script>
+
         <!-- App functions -->
         <script src="../assets/js/app.min.js"></script>
     </body>

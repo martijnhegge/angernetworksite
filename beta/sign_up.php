@@ -155,6 +155,32 @@
                 } 
             });
         }
+    $(function() {
+        $('#username').on('keypress', function(e) {
+            if (e.which == 32){
+                toastr.error("Spaces are not allowed in an username!");
+                return false;
+            }
+        });
+        $('#password').on('keypress', function(e) {
+            if (e.which == 32){
+                toastr.error("Spaces are not allowed in a password!");
+                return false;
+            }
+        });
+        $('#password2').on('keypress', function(e) {
+            if (e.which == 32){
+                toastr.error("Spaces are not allowed in a password!");
+                return false;
+            }
+        });
+        $('#email').on('keypress', function(e) {
+            if (e.which == 32){
+                toastr.error("Spaces are not allowed in an email!");
+                return false;
+            }
+        });
+    });
     $(document).keypress(function(e) {
     if (e.which == 13) {
     shitashell();

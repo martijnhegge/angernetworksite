@@ -103,7 +103,7 @@
 
 <body style="background-color: #f4f4f4; margin: 0 !important; padding: 0 !important;">
     <!-- HIDDEN PREHEADER TEXT -->
-    <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">Dear %username%, you successfully replied to your ticket. Info is: </div>
+    <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">Dear %username%, you  received a message. Info is: <br></div>
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
         <!-- LOGO -->
         <tr>
@@ -120,7 +120,7 @@
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                     <tr>
                         <td bgcolor="#22313a" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #dcf3ff; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
-                            <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Ticket Reply!</h1> <img src=" https://angernetwork.dev/beta/mail_templates/img/ticket.png" width="125" height="120" style="display: block; border: 0px;" />
+                            <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Message Received!</h1> <img src=" https://angernetwork.dev/beta/mail_templates/img/new__message.png" width="125" height="120" style="display: block; border: 0px;" />
                         </td>
                     </tr>
                 </table>
@@ -131,37 +131,32 @@
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                     <tr>
                         <td bgcolor="#2b3c46" align="left" style="padding: 20px 30px 40px 30px; color: #9bbcd1; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            <p style="margin: 0;">Dear %username%, you successfully replied to your ticket. A staff member will reply as soon as possible.</p>
+                            <p style="margin: 0;">Dear %username%, you received a message.</p>
                         </td>
                     </tr>
-                    <!-- <tr>
-                        <td bgcolor="#2b3c46" align="left">
-                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td bgcolor="#2b3c46" align="center" style="padding: 20px 30px 60px 30px;">
-                                        <table border="0" cellspacing="0" cellpadding="0">
-                                            <tr>
-                                                <td align="center" style="border-radius: 3px;" bgcolor="#394e5a"><a href="%verlink%" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #9bbcd1; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #394e5a; display: inline-block;">Confirm Account</a></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr> --> <!-- COPY -->
                     <tr>
                         <td bgcolor="#2b3c46" align="left" style="padding: 0px 30px 0px 30px; color: #9bbcd1; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            <p style="margin: 0;">Your reply is:</p>
+                            <p style="margin: 0;">Message info:</p>
                         </td>
                     </tr> <!-- COPY -->
                     <tr>
                         <td bgcolor="#2b3c46" align="left" style="padding: 20px 30px 20px 30px; color: #9bbcd1; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            <li style="margin: 0;">%content%</li>
+                            <li style="margin: 0;">%title%</li>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td bgcolor="#2b3c46" align="left" style="padding: 20px 30px 20px 30px; color: #9bbcd1; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
+                            <li style="margin: 0;">%message%</li>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td bgcolor="#2b3c46" align="left" style="padding: 20px 30px 20px 30px; color: #9bbcd1; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
+                            <li style="margin: 0;">Message by <i>%sendby%</i></li>
                         </td>
                     </tr>
                     <tr>
                         <td bgcolor="#2b3c46" align="left" style="padding: 0px 30px 20px 30px; color: #9bbcd1; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            Go to <a href="https://angernetwork.dev" target="_blank" style="color: #FFA73B;">angernetwork.dev</a> to view your ticket details
+                            Go to <a href="https://angernetwork.dev" target="_blank" style="color: #FFA73B;">angernetwork.dev</a> to view your message
                         </td>
                     </tr>
                     <tr>

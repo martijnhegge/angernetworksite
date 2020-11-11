@@ -12,6 +12,7 @@
     $ACTUALURL = 'sfsf.php';
     $message = '';
     $noadmin = $_SESSION['no-admin'];
+    $notallowed = $_SESSION['not-allowed'];
 
     $rowCount = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=COUNTPSN");
     
@@ -378,45 +379,33 @@ function showResult(str) {
                   <div class="modal-content">
                     <div class="modal-header">
                       
-                      <h4 class="modal-title">Inbox Of <?= $user->getFromTable_MyId("username", "users");?> </h4>
-                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="color: #f74d48;">Inbox Of <?= $user->getFromTable_MyId("username", "users");?> </h4>
+                      <button type="button" class="close" data-dismiss="modal" style="color: #f74d48;">&times;</button>
                     </div>
                     <div class="modal-body">
-                      <p><!-- <div class="container">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h6 class="card-title">Timeline</h6>
-                                        <div id="content"> -->
-                                            <ul class="timeline">
-                                                <li class="event" data-date="12:30 - 1:00pm">
-                                                    <h3>Inbox</h3>
-                                                    <p>Your inbox will come here with email overview.</p>
-                                                </li>
-                                                <!-- <li class="event" data-date="2:30 - 4:00pm">
-                                                    <h3>Opening Ceremony</h3>
-                                                    <p>Get ready for an exciting event, this will kick off in amazing fashion with MOP &amp; Busta Rhymes as an opening show.</p>
-                                                </li>
-                                                <li class="event" data-date="5:00 - 8:00pm">
-                                                    <h3>Main Event</h3>
-                                                    <p>This is where it all goes down. You will compete head to head with your friends and rivals. Get ready!</p>
-                                                </li>
-                                                <li class="event" data-date="8:30 - 9:30pm">
-                                                    <h3>Closing Ceremony</h3>
-                                                    <p>See how is the victor and who are the losers. The big stage is where the winners bask in their own glory.</p>
-                                                </li> -->
-                                            </ul>
-                                       <!--  </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-</p>
+                      <p>
+                        <ul class="timeline">
+                                <?php
+                                $query = $con->db->prepare("SELECT * FROM `user_inbox` WHERE userid = :userid ORDER BY time DESC");
+                                $query->execute(array("userid"=>$_SESSION['id']));
+                                $res = $query->fetchAll();
+                                foreach($res as $row)
+                                {
+                                echo '
+                                    <li class="event" data-date="'.$row['time'].'">
+                                        <h3>'.$row['title'].'</h3>
+                                        <p>'.$row['message'].'<br><br><i><b>By '.$row['sender_name'].'</b></i></p>
+                                    </li>
+                                    
+                                ';
+                                 }
+                                 ?>
+                                   
+                                </ul>
+                        </p>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" >Close</button>
                     </div>
                   </div>
                   
@@ -644,7 +633,14 @@ function showResult(str) {
             </script>';
             unset($_SESSION['no-admin']);
         }
+        if($notallowed == '1' || $notallowed == 1)
+        {
+            echo '<script>toastr.error("You are not allowed to visit that page. Your action will be logged");
+            </script>';
+            unset($_SESSION['not-allowed']);
+        }
         unset($_SESSION['no-admin']);
+        unset($_SESSION['not-allowed']);
         ?>
         <!-- Site Functions & Actions -->
         <script src="assets/js/app.min.js"></script>

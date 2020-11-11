@@ -30,6 +30,11 @@
         <link href="assets/css/app.min.css" rel="stylesheet">
     </head>
 <style> 
+#file-upload-btn {
+   opacity: 0;
+   position: absolute;
+   z-index: -1;
+}
 .toast{
     background: #f74d48;
 } 
@@ -200,9 +205,12 @@
                                                 <label>Email</label>
                                                 <input class="form-control" type="text" id="email" name="email" value="<?php echo $user->getFromTable_MyId("email", "users"); ?>">
                                                 <br>
-                                                <label>Profile Picture [ Only https links ]<small>(200x200 max Image/GIF)</small></label>
-                                                <input class="form-control" type="text" name="imageid" id="imageid" value="<?php echo $user->getFromTable_MyId("pic", "users"); ?>">
-                                              
+                                                <label style="display: block;">Profile Picture [ Only https links ]<small>(200x200 max Image/GIF)</small></label>
+                                                <!-- <div style="display: inline;"> -->
+                                                <input class="form-control" type="text" style=" max-width: 50%; display: inline;" name="imageid" id="imageid" value="<?php echo $user->getFromTable_MyId("pic", "users"); ?>">
+                                                <label class=" btn btn-theme" style=" max-width: 30%; display: inline-block; margin-top: 5px" for="file-upload-btn">Or Browse...</label>
+                                                <!-- </div> -->
+                                                <input class="btn btn-theme" type="file" name="imagefile" id="file-upload-btn" value="<?php echo $user->getFromTable_MyId("pic", "users"); ?>">
                                                 <br><br>
                                                 <footer>
                                                     <a onclick="updateProfile(this)"class="btn btn-theme" type="submit" value="Submit">Save Changes</a>

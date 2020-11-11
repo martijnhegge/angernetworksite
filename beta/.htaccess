@@ -1,9 +1,8 @@
-<Directory /var/www/>
 <IfModule mod_rewrite.c>
-	RewriteEngine On 
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_FILENAME}\.php -f
-	RewriteRule ^(.*)$ $1.php [NC,L]
-	RewriteRule ^$ /index [L]
-	ErrorDocument 404 chat.php
+    RewriteEngine On 
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}\.php -f
+    RewriteRule ^(.*)$ $1.php [NC,L]
+    ErrorDocument 403 /403
+    ErrorDocument 404 /404.php
 </IfModule>

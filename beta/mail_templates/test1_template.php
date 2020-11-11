@@ -109,9 +109,9 @@
         <!-- LOGO -->
         <tr>
             <td bgcolor="#1e2a31" align="center">
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                    <tr>
-                        <td align="center" valign="top" style="padding: 40px 10px 40px 10px;"> </td>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 620px;">
+                    <tr width="100%">
+                        <td align="center" width="100%" valign="top" style="padding: 40px 10px 40px 10px;"> <img style="border-radius: 4px 4px 4px 4px;" width="100%" src="https://angernetwork.dev/beta//assets/img/images/AnGerNetworkBanner.jpg" /></td>
                     </tr>
                 </table>
             </td>
