@@ -785,6 +785,9 @@ include "emoji.php";
                                 <a  href="logs_noadmin.php">No Admin Logs</a>
                             </li>
                             <li>
+                                <a  href="logs_notallowed.php">Not Allowed Logs</a>
+                            </li>
+                            <li>
                                 <a  href="logs_rbooter.php">Removed Booter Logs</a>
                             </li>
                             <li>
