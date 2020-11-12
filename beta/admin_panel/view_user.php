@@ -9,7 +9,10 @@
 
     $userid = $_SESSION['id'];
     if(!$user->isAdmin()){
-        header("Location: ../../dashboard.php?error=no-admin");
+        $_SESSION['no-admin'] = "1";
+        $SQL = $con->db->prepare('INSERT INTO `noadmin_logs` (`userid`, `page`)VALUES(:id, :page)');
+        $SQL->execute(array('id' => $_SESSION['id'], 'page' => $_SERVER['REQUEST_URI']));
+        header("Location: ../index.php");
     }
     $id = $_GET['id'];
     if(isset($_POST['savechanges'])){
