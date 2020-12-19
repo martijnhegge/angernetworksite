@@ -1,0 +1,133 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><style id="xml-viewer-style">/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+div.header {
+    border-bottom: 2px solid black;
+    padding-bottom: 5px;
+    margin: 10px;
+}
+
+div.folder &gt; div.hidden {
+    display:none;
+}
+
+div.folder &gt; span.hidden {
+    display:none;
+}
+
+.pretty-print {
+    margin-top: 1em;
+    margin-left: 20px;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+#webkit-xml-viewer-source-xml {
+    display: none;
+}
+
+.opened {
+    margin-left: 1em;
+}
+
+.comment {
+    white-space: pre;
+}
+
+.folder-button {
+    -webkit-user-select: none;
+    cursor: pointer;
+    display: inline-block;
+    margin-left: -10px;
+    width: 10px;
+    background-repeat: no-repeat;
+    background-position: left top;
+    vertical-align: bottom;
+}
+
+.fold {
+    background: url("data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' fill='%23909090' width='10' height='10'&gt;&lt;path d='M0 0 L8 0 L4 7 Z'/&gt;&lt;/svg&gt;");
+    height: 10px;
+}
+
+.open {
+    background: url("data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' fill='%23909090' width='10' height='10'&gt;&lt;path d='M0 0 L0 8 L7 4 Z'/&gt;&lt;/svg&gt;");
+    height: 10px;
+}
+</style></head><body><div id="webkit-xml-viewer-source-xml"><pages xmlns=""><link type="text/css" rel="stylesheet" id="dark-mode-general-link"/><link type="text/css" rel="stylesheet" id="dark-mode-custom-link"/><style type="text/css" id="dark-mode-custom-style"/>
+  <link>
+    <title>Ticket</title>
+    <url>support.php</url>
+  </link>
+  <link>
+    <title>Blacklist</title>
+    <url>blacklist.php</url>
+  </link>
+  <link>
+    <title>Password Reset</title>
+    <url>profile.php</url>
+  </link>
+  <link>
+    <title>Geo Lookup</title>
+    <url>geo.php</url>
+  </link>
+  <link>
+    <title>Whois</title>
+    <url>whois.php</url>
+  </link>
+  <link>
+    <title>FAQ</title>
+    <url>faq.php</url>
+  </link> 
+  <link>
+    <title>PSN Resolver</title>
+    <url>faq.php</url>
+  </link> 
+  <link>
+    <title>XBOX Resolver</title>
+    <url>faq.php</url>
+  </link> 
+  <link>
+    <title>IP Loggger</title>
+    <url>iplogger.php</url>
+  </link> 
+  <link>
+    <title>PSN History</title>
+    <url>psn_history.php</url>
+  </link>
+  <link>
+    <title>Database Leaks</title>
+    <url>dbleaks.php</url>
+  </link>  
+  <link>
+    <title>Profile</title>
+    <url>profile.php</url>
+  </link>
+</pages></div><!-- <div class="header"><span>This XML file does not appear to have any style information associated with it. The document tree is shown below.</span><br /></div><div class="pretty-print"><div class="folder" id="folder0"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;pages&gt;</span></div><div class="opened"><div class="line"><span class="html-tag">&lt;link<span class="html-attribute"> <span class="html-attribute-name">type</span>="<span class="html-attribute-value">text/css</span>"</span><span class="html-attribute"> <span class="html-attribute-name">rel</span>="<span class="html-attribute-value">stylesheet</span>"</span><span class="html-attribute"> <span class="html-attribute-name">id</span>="<span class="html-attribute-value">dark-mode-general-link</span>"</span>/&gt;</span></div><div class="line"><span class="html-tag">&lt;link<span class="html-attribute"> <span class="html-attribute-name">type</span>="<span class="html-attribute-value">text/css</span>"</span><span class="html-attribute"> <span class="html-attribute-name">rel</span>="<span class="html-attribute-value">stylesheet</span>"</span><span class="html-attribute"> <span class="html-attribute-name">id</span>="<span class="html-attribute-value">dark-mode-custom-link</span>"</span>/&gt;</span></div><div class="line"><span class="html-tag">&lt;style<span class="html-attribute"> <span class="html-attribute-name">type</span>="<span class="html-attribute-value">text/css</span>"</span><span class="html-attribute"> <span class="html-attribute-name">id</span>="<span class="html-attribute-value">dark-mode-custom-style</span>"</span>/&gt;</span></div><span>
+  </span><div class="folder" id="folder1"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;link&gt;</span></div><div class="opened"><span>
+    </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>Ticket</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+    </span><div class="line"><span class="html-tag">&lt;url&gt;</span><span>support.php</span><span class="html-tag">&lt;/url&gt;</span></div><span>
+  </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/link&gt;</span></div></div><span>
+  </span><div class="folder" id="folder2"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;link&gt;</span></div><div class="opened"><span>
+    </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>HTML br tag</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+    </span><div class="line"><span class="html-tag">&lt;url&gt;</span><span>https://www.w3schools.com/tags/tag_br.asp</span><span class="html-tag">&lt;/url&gt;</span></div><span>
+  </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/link&gt;</span></div></div><span>
+  </span><div class="folder" id="folder3"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;link&gt;</span></div><div class="opened"><span>
+    </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>CSS background Property</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+    </span><div class="line"><span class="html-tag">&lt;url&gt;</span><span>https://www.w3schools.com/cssref/css3_pr_background.asp</span><span class="html-tag">&lt;/url&gt;</span></div><span>
+  </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/link&gt;</span></div></div><span>
+  </span><div class="folder" id="folder4"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;link&gt;</span></div><div class="opened"><span>
+    </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>CSS border Property</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+    </span><div class="line"><span class="html-tag">&lt;url&gt;</span><span>https://www.w3schools.com/cssref/pr_border.asp</span><span class="html-tag">&lt;/url&gt;</span></div><span>
+  </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/link&gt;</span></div></div><span>
+  </span><div class="folder" id="folder5"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;link&gt;</span></div><div class="opened"><span>
+    </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>JavaScript Date Object</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+    </span><div class="line"><span class="html-tag">&lt;url&gt;</span><span>https://www.w3schools.com/jsref/jsref_obj_date.asp</span><span class="html-tag">&lt;/url&gt;</span></div><span>
+  </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/link&gt;</span></div></div><span>
+  </span><div class="folder" id="folder6"><div class="line"><span class="folder-button fold"></span><span class="html-tag">&lt;link&gt;</span></div><div class="opened"><span>
+    </span><div class="line"><span class="html-tag">&lt;title&gt;</span><span>JavaScript Array Object</span><span class="html-tag">&lt;/title&gt;</span></div><span>
+    </span><div class="line"><span class="html-tag">&lt;url&gt;</span><span>https://www.w3schools.com/jsref/jsref_obj_array.asp</span><span class="html-tag">&lt;/url&gt;</span></div><span>
+  </span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/link&gt;</span></div></div><span>
+</span></div><span class="folded hidden">...</span><div class="line"><span class="html-tag">&lt;/pages&gt;</span></div></div></div> --></body></html>

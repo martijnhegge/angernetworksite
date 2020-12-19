@@ -2,6 +2,7 @@
 date_default_timezone_set('Australia/Brisbane');
 include "database.php";
 include "emoji.php";
+//include "errorhandler.php";
 	    class user extends database{
 		private $actual_url; 
 		private $useridactive;
@@ -16,8 +17,15 @@ include "emoji.php";
 		{
 			return $url;
 		}
+
+
 		public function initChecks(){
             $this->update("users", array("lastActive"=>date("Y-m-d"), "latestip"=>$_SERVER['HTTP_CF_CONNECTING_IP']), "id", $_SESSION['id']);
+            $queryu = $this->db->prepare("UPDATE `active_users` SET `last_active` = NOW(), `latestip` = :lip WHERE `userid` = :id");
+			$queryu->execute(array("lip"=>$_SERVER['HTTP_CF_CONNECTING_IP'],"id"=>$_SESSION['id']));
+            
+
+            //$this->update("active_users",array("last_active" =>"NOW()", "latestip"=>$_SERVER['HTTP_CF_CONNECTING_IP']), "userid", $_SESSION['id']);
 			if(!$_SESSION['id']){
 				$_SESSION['last-url'] = $actual_url;
 				header('Location: sign_in.php');
@@ -59,6 +67,7 @@ include "emoji.php";
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 	    }
+	    // public function getUserCountOnline
 		public function getFromTable_ThisUsername($what, $table, $username){
 			return $this->select($what, $table, "username","id", $username, $id)[0][0];
 		}
@@ -76,6 +85,40 @@ include "emoji.php";
 		}
 		public function getFromTable_ThisId($what, $table, $id){
 			return $this->select($what, $table, "id", $id)[0][0];
+		}
+		public function getWhoIsOnline(){
+			$query = $this->db->prepare("SELECT * FROM `active_users` WHERE `lastactivity` >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
+			$query->execute();
+			$rowCount = $query->fetchAll();
+			foreach($rowCount as $row){	
+                $username =  $row['username']; //$this->getFromTable_ThisId("username", "users",$row['id']);
+			    $color = $this->getWhosOnlineColor($row['userid']);
+			    $expiry_date = $this->getFromTable_ThisId("expiry_date", "users",$row['userid']);
+			    //$active =	$this->getFromTable_ThisId("active","users", $row['id']);
+                //$active = $this->getFromTable_ThisUsername("active", "users", $row['id']);
+				//if(!$this->select("active","users", "id", $_SESSION['id'])[0][0]){
+					
+					   
+                        echo '
+						<a style="'.$this->getWhosOnlineSparkle($row['userid']).' color: '.$this->getWhosOnlineColor($row['userid']).'">
+						<i class="fa fa-'.$this->getWhosOnlineIcons($row['userid']).'">
+						</i> ✓ '.$username.' </a> ,
+
+                        ';
+					            //return $this->getFromTable_ThisId("username","users", array("active"=>"1"), "id", $row['id']);
+				/*}
+				else
+				{       
+					    echo '   
+								<a style="'.$this->getWhosOnlineSparkle($row['id']).' color: '.$this->getWhosOnlineColor($row['id']).'">
+								<i class="fa fa-'.$this->getWhosOnlineIcons($row['id']).'">
+								</i> ✓ '.$username.' </a> ,       
+                     ';
+                               // return $this->getFromTable_ThisId("username","users", array("active"=>"0"), "id", $row['id']);
+				        
+
+				}*/
+			}
 		}
 		public function getWhoIsOnline1(){
 			$query = $this->db->prepare("SELECT * FROM `users`");
@@ -112,7 +155,7 @@ include "emoji.php";
 			}
 		}
 	    /*public function getWhoIsOnline11(){
-			$query = $this->db->prepare("SELECT * FROM `active_users`  WHERE `userid` = :id AND `active` = :active");
+			$query = $this->db->prepare("SELECT * FROM `active_users`  WHERE `userid` = :id AND `last_active` = :active");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$query->execute();
 			$rowCount = $query->fetchAll();
@@ -164,9 +207,10 @@ include "emoji.php";
 			$query->execute(array("id"=>self::sanitize($uid)));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 			switch($result['admin']){
-				case 0: return "#a3acb9";
-				case 1: return "#4680d7";
-				case 2: return "#5f18cc";
+				case 0: return "#00FF33";
+				case 1: return "#00FF33";
+				case 2: return "#00FFFF";
+				case 3: return "#FF0000";
 				default: return "#ff0000";
 			}
 		}
@@ -175,6 +219,9 @@ include "emoji.php";
 				return "background: url(https://i.imgur.com/7F70N.gif);";
 			}
 			if($this->getFromTable_ThisId("moderator", "users", $heck) == "2"){
+				return "background: url(https://i.imgur.com/7F70N.gif);";
+			}
+			if($this->getFromTable_ThisId("level", "users", $heck) >= "1"){
 				return "background: url(https://i.imgur.com/7F70N.gif);";
 			}
 			else
@@ -642,7 +689,7 @@ include "emoji.php";
                     <a href="logger.php"><i class="zwicon-database text-white"></i>PSN+IP Logger</a>
                 </li>-->
                     <li class="navigation__sub">
-                        <a  href="" data-mae-action="submenu-toggle"><i class="zwicon-earth-alt text-white"></i>Misc & Tools</i></a>
+                        <a  href="" data-mae-action="submenu-toggle"><i class="zwicon-plus text-white"></i>Misc & Tools</i></a>
                         <ul>
                             <li>
                                 <a  href="geo.php">Geo Lookup</a>
@@ -869,6 +916,12 @@ include "emoji.php";
 		}
 		public function getUserCountPaid(){
 			$result = $this->db->prepare("SELECT count(*) FROM `users` WHERE expiry_date > NOW();");
+    		$result->execute();
+    		$rowCount = $result->fetchColumn(0);
+    		return $rowCount;
+		}
+		public function getUserCountOnline(){
+			$result = $this->db->prepare("SELECT count(*) FROM `active_users` WHERE `lastactivity` >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;

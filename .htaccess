@@ -1,13 +1,14 @@
-	ErrorDocument 400 /404.php
-	ErrorDocument 401 /404.php
-	ErrorDocument 402 /404.php
-	ErrorDocument 403 /404.php
-	ErrorDocument 404 /404.php
 <IfModule mod_rewrite.c>
 	RewriteEngine On 
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME}\.php -f
 	RewriteRule ^(.*)$ $1.php [NC,L]
-	RewriteRule ^$ /index.php [L]
+	RewriteRule ^$ /index [L]
 
+	ErrorDocument 400 /404
+	ErrorDocument 401 /404
+	ErrorDocument 402 /404
+	ErrorDocument 403 /404
+	ErrorDocument 404 /404
+	ErrorDocument 500 /404
 </IfModule>

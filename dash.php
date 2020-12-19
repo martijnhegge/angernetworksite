@@ -6,6 +6,7 @@
     $user = new user;
     $con = new database;
     $con->connect();
+    $user->initChecks();
     $message = '';
     
     if(!in_array($_SERVER['HTTP_CF_CONNECTING_IP'], $whitelisted))
@@ -54,9 +55,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <title>Insane Dev - Dash</title>
+        <title>AnGerNetwork - Dash</title>
 
-        <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="https://imgur.com/lV7AVgB.png" type="image/x-icon" />
         <!-- Vendors -->
         <link href="assets/vendors/animate.css/animate.min.css" rel="stylesheet">
         <link href="assets/vendors/zwicon/zwicon.min.css" rel="stylesheet">
@@ -68,12 +69,13 @@
     </head>
 <style> 
 .toast{
-    background: #861bc4;
+    background: #f74d48;
+    border-color: #FFFFFF;
 } 
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #2e343a; }
-    ::-webkit-scrollbar-thumb { background: #861bc4; }
-    ::-webkit-scrollbar-thumb:hover { background: #861bc4; }              
+    ::-webkit-scrollbar-thumb { background: #f74d48; }
+    ::-webkit-scrollbar-thumb:hover { background: #f74d48; }              
 </style>
     <body>
         <div>
@@ -93,7 +95,7 @@
 
                 <div class="logo d-none d-md-block">
                     <a href="dash.php">
-                        Insane Dev
+                        AnGerNetwork
                         <small><?php echo $user->getFromTable_MyId("username", "users"); ?></small>
                     </a>
                 </div>
@@ -103,7 +105,8 @@
                 </ul>
                
                 <small>
-                ( <?php if($user->getFromTable_MyId("admin", "users") == "2") 
+                ( <?php if($user->getFromTable_MyId("admin", "users") == "3") 
+                { echo "Founder"; }if($user->getFromTable_MyId("admin", "users") == "2") 
                 { echo "Moderator"; }if($user->getFromTable_MyId("admin", "users") == "1") 
                 { echo "Administrator"; }if ($user->getFromTable_MyId("admin", "users") == "0") { echo "Member"; }?> )</small>
                 <div class="user dropdown">
@@ -111,9 +114,9 @@
                         <img class="user__img" src="<?php echo $user->getFromTable_MyId("pic", "users"); ?>" alt="">
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <div class="dropdown-header"><?php echo $user->getFromTable_MyId("username", "users"); ?></div>
-                        <a class="dropdown-item" href="profile-about.html"><i class="zmdi zmdi-account"></i> View Profile</a>
-                        <a class="dropdown-item" href="#"><i class="zmdi zmdi-settings"></i> Settings</a>
+                        <!-- <div class="dropdown-header"><?php echo $user->getFromTable_MyId("username", "users"); ?></div> -->
+                        <a class="dropdown-item" href="profile.php"><i class="zmdi zmdi-account"></i> View Profile</a>
+                        <a class="dropdown-item" href="usersettings.php"><i class="zmdi zmdi-settings"></i> Settings</a>
                         <a class="dropdown-item" href="sign_out.php"><i class="zmdi zmdi-time-restore"></i> Logout</a>
                     </div>
                 </div>
@@ -147,19 +150,19 @@
                         <div class="card">
                             <div class="card-body">
                                 <h4 class="card-title">Welcome!</h4>
-                                <h6 class="card-subtitle">To Our Brand New Website.</h6>
+                                <h6 class="card-subtitle">To out brand new website.</h6>
                                 <br>
                                 <h6 class="card-subtitle"></h6>
                                 <br>
-                                <h6 class="card-subtitle">U can Visit Our Discord and <a href="https://discord.gg/ZWEhSgj">Click Here...</a>you can  here join us for support tool pm a admin for more info</h6>
+                                <h6 class="card-subtitle">U can Visit Our Discord and <a href="https://discord.gg/ZWEhSgj">Click Here...</a>you can join us for support tool pm a admin for more info</h6>
                                 <br>
-                                <h6 class="card-subtitle">We hav added a free Resolver & Logger</h6>
+                                <h6 class="card-subtitle">AnGerNetwork is always being updated for the best experience and tools for you guys</h6>
                                 <br>
-                                <h6 class="card-subtitle">If the site not responded here u can <a href="sign_in.php">re-login...</a></h6>
+                                <h6 class="card-subtitle">If the site isn't responding, y can <a href="sign_in.php">re-login...</a> here.</h6>
                                 <br>
-                                 <h6 class="card-subtitle">Our Payment System Is under Maintance please join the discord server so we can afther ur payment add your time </h6>
+                                 <h6 class="card-subtitle">If you prefer Bitcoin payment method, no worries it is coming up!</h6>
                                 <br>
-                                 <h6 class="card-subtitle">We hav added now blacklisting in our tool so can't be sniffed by others for 3 euro we can blacklist u from our site and tool </h6>
+                                 <h6 class="card-subtitle">We have added blacklisting. what does it mean? When someone tries to resolve you or tries to grab your ip, the output will be 'blacklisted'. nobody is able to get your ip while they are using one of our products.</h6>
                                 <br>
                                 <h6> </h6>
                             </div>
@@ -171,17 +174,17 @@
                             <div class="card-body">                    
                                 <h6>Tool Features/Announcement</h6>
                                 <br>
-                                    <h6 class="card-subtitle">Fast IP Grabbing - Friend Detection - Auto Refresh - Non Host Mods</h6>   
+                                    <h6 class="card-subtitle">Best Multi RTM Tool - Most Non Host Mods Options - Unique Client Options </h6>   
                                 <br>
-                                    <h6 class="card-subtitle">4G/VPN/DDOS protected Detection - All Cod IP Spoofer - All Cod Nat Type</h6>   
+                                    <h6 class="card-subtitle">4G/VPN/DDOS protected Detection - All Cod IP Spoofer - All Cod Nat Type Spoofer</h6>   
                                 <br>
-                                     <h6 class="card-subtitle">Spoofer - All Cod Xuid Spoofer - All Cod IP Grabber - All BF3/4 hardline IP Grabber</h6>        
+                                     <h6 class="card-subtitle">PC Mods</h6>        
                                 <br>
-                                	 <h6 class="card-subtitle">GTA V IP Grabber - IP Pull history stored on the Cloud - Xuid Pull history stored on the Cloud</h6>   
+                                	 <h6 class="card-subtitle">Discord bot: AnGerBot - Includes: resolvers, stresser, port scanner, iplookup and more <a href="https://discord.com/oauth2/authorize?client_id=670575563429380097&permissions=8&scope=bot">Bot link to add it to your server</a></h6>   
                                 <br>
                                     <h6 class="card-subtitle">Port Scanner - IP Ping - Name Editor - Geolocation Tool - PSN Resolver - PSN Name Checker</h6>   
                                 <br>   
-                                	 <h6 class="card-subtitle">Grab yourself that deal PM For your tool payment *Staff Insane Dev*</h6>   
+                                	 <h6 class="card-subtitle">Grab yourself that deal PM For your tool payment *Staff AnGerNetwork*</h6>   
                             </div>
                         </div>
                     </div>
@@ -191,17 +194,17 @@
                             <div class="card-body">
                             	<h6>Web & Tool Stats</h6>
                                 <br>
-                                    <h6 class="card-subtitle">Total Insane Users : <?php echo $user->getUserCount(); ?></h6>   
+                                    <h6 class="card-subtitle">Total Users : <?=$user->getUserCount(); ?></h6>   
                                 <br>
-                                    <h6 class="card-subtitle">Pulled PSN History : <?php echo $user->getPulledIPSCountPSN(); ?></h6>  
+                                    <h6 class="card-subtitle">Pulled PSN History : <?=$user->getPulledIPSCountPSN(); ?></h6>  
                                 <br>
-                                    <h6 class="card-subtitle">Pulled Xbox History : <?php echo $user->getPulledIPCountXbox(); ?></h6>      
+                                    <h6 class="card-subtitle">Pulled Xbox History : <?=$user->getPulledIPCountXbox(); ?></h6>      
                                 <br>
-                                	<h6 class="card-subtitle">Total Sniffer Logins : <?php echo $user->getAllUserMenuLogins(); ?></h6>   
+                                	<h6 class="card-subtitle">Total Tool Logins : <?=$user->getAllUserMenuLogins(); ?></h6>   
                                 <br>
-                                    <h6 class="card-subtitle">All Logged Count : <?php echo $user->getPulledIPCountAll(); ?></h6> 
+                                    <h6 class="card-subtitle">All Logged Count : <?=$user->getPulledIPCountAll(); ?></h6> 
                                 <br>   
-                                	<h6 class="card-subtitle">All IP Storage : <?php echo $user->getAllUsersIPStorage(); ?></h6>
+                                	<h6 class="card-subtitle">All IP Storage : <?=$user->getAllUsersIPStorage(); ?></h6>
                             </div>
                         </div>
                     </div>
@@ -233,7 +236,7 @@
 
                     <div class="card">
                     <div class="card-body">
-                        <h6>Insane Sniffer Created By Insane Dev</h6>
+                        <h6>AnGerNetwork Tool</h6>
                         <br>
                         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                             <ol class="carousel-indicators">
@@ -247,10 +250,10 @@
                                     <img src="assets/img/images/gta.jpg" alt="First slide">
                                 </div>
                                 <div class="carousel-item">
-                                    <img src="assets/img/images/sniffer.png" alt="Second slide">
+                                    <img src="https://angernetwork.dev/beta/assets/img/images/angerstresser.PNG" alt="Second slide">
                                 </div>
                                 <div class="carousel-item">
-                                    <img src="assets/img/images/resolver.png" alt="Third slide">
+                                    <img src="https://angernetwork.dev/beta/assets/img/images/usermanpanel.PNG" alt="Third slide">
                                 </div>
                             </div>
                             <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -267,13 +270,14 @@
     </div>
 </div>
     
-<footer class="footer">Copyright &copy; 2017 & 2020 Insane Dev ( Protected By NASA Protection )
+<footer class="footer">Copyright &copy; 2017 & 2020 AnGerNetwork ( Protected By NASA Protection )
     <nav class="footer__menu">
         <a  href="https://insane-dev.xyz/index.php">Home</a>
         <a  href="https://discord.gg/c9STfn7">Discord</a>
         <a  href="https://www.facebook.com/groups/370201123653676/">Facebook</a>
         <a  href="https://">VPN coming soon</a>
     </nav>
+    </br>
 </footer>
 </section>
 </div>

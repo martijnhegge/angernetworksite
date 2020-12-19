@@ -534,7 +534,16 @@ function showResult(str) {
                             </div>
                         </div>
                     </div>
-               
+
+                    <div class="col-md-12">
+                        <div class="card stats">
+                            <div class="card-body">
+                                <h4 class="card-title">Online Users</h4>
+                                <h6 class="card-subtitle"><?php echo $user->getWhoIsOnline(); ?></h6>                              
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="col-md-5">
                     	<div class="card">
                             <div class="card-body">
@@ -562,7 +571,7 @@ function showResult(str) {
 
                     <div class="card">
                     <div class="card-body">
-                        <h6>AnGerNetwork</h6>
+                        <!-- <h6>AnGerNetwork</h6> -->
                         <br>
                         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                             <ol class="carousel-indicators">
@@ -592,6 +601,13 @@ function showResult(str) {
                     </div>
                 </div>
             </div>
+            <div class="col-md-4">
+                        <div class="card stats">
+                            <div class="card-body">
+                                <iframe src="https://discordapp.com/widget?id=593016518900449290&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>                           
+                            </div>
+                        </div>
+                    </div>
         </div>
     </div>
 </div>
