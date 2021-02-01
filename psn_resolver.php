@@ -144,6 +144,171 @@
 
         </header>
             <div class="main">
+                <aside class="sidebar notifications" >
+                <div class="notifications__panel" id="notifications-messages" style="display: block;">
+                    <div class="sidebar__header">
+                        <i class="zwicon-arrow-left sidebar__close"></i>
+                        <h2>Messages <small>23 Unread messages</small></h2>
+                        <?php if($user->isAdmin()){?>
+                        <div class="actions">
+                            <a href="/admin_panel/admin_userinbox" class="actions__item"><i class="zwicon-plus"></i></a>
+                        </div>
+                        <?php }?>
+                    </div>
+
+                    <div class="notifications__body" >
+                        <div class="scrollbar os-host os-theme-light os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-scrollbar-vertical-hidden os-host-transition"><div class="os-resize-observer-host"><div class="os-resize-observer observed" style="left: 0px; right: auto;"></div></div><div class="os-size-auto-observer" style="height: calc(100% + 1px); float: left;"><div class="os-resize-observer observed"></div></div><div class="os-content-glue" style="margin: -21px 0px;"></div><div class="os-padding"><div class="os-viewport os-viewport-native-scrollbars-invisible" style=""><div class="os-content" style="padding: 21px 0px; height: 100%; width: 100%;">
+                            <div class="listview listview--hover listview--truncate">
+                                <?php
+                                $query = $con->db->prepare("SELECT user_inbox.*, users.pic FROM `user_inbox` LEFT JOIN `users` ON users.id = user_inbox.sender_id WHERE userid = :userid ORDER BY time DESC");
+                                $query->execute(array("userid"=>$_SESSION['id']));
+                                $res = $query->fetchAll();
+                                foreach($res as $row)
+                                {
+                                echo '
+                                    <a href="" class="listview__item">
+                                        <img class="avatar-img" src="'.$row['pic'].'" alt="">
+                                        <div class="listview__content">
+                                            <h4>'.$row['title'].'</h4>
+                                            <p>'.$row['message'].'</p>
+                                        </div>
+                                    </a>
+                                ';
+                                 }
+                                 ?>
+                            </div>
+                        </div></div></div><div class="os-scrollbar os-scrollbar-horizontal os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px); width: 100%;"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px); height: 100%;"></div></div></div><div class="os-scrollbar-corner"></div></div>
+                    </div>
+                </div>
+                <div class="notifications__panel" id="notifications-alerts" style="display: none;">
+                    <div class="sidebar__header">
+                        <i class="zwicon-arrow-left sidebar__close"></i>
+                        <h2>Alerts <small>100+ New Alerts</small></h2>
+
+                        <div class="actions">
+                            <a href="" class="actions__item"><i class="zwicon-checkmark-circle"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="notifications__body">
+                        <div class="scrollbar os-host os-theme-light os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-scrollbar-vertical-hidden os-host-transition"><div class="os-resize-observer-host"><div class="os-resize-observer observed" style="left: 0px; right: auto;"></div></div><div class="os-size-auto-observer" style="height: calc(100% + 1px); float: left;"><div class="os-resize-observer observed"></div></div><div class="os-content-glue" style="margin: -21px 0px; width: 0px; height: 0px;"></div><div class="os-padding"><div class="os-viewport os-viewport-native-scrollbars-invisible" style=""><div class="os-content" style="padding: 21px 0px; height: 100%; width: 100%;">
+                            <div class="listview listview--hover listview--truncate">
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-red"><i class="zwicon-info-circle"></i></span>
+                                    <div class="listview__content">
+                                        <h4>Email Marketing</h4>
+                                        <p>Need to re-send emails</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-purple"><i class="zwicon-package"></i></span>
+                                    <div class="listview__content">
+                                        <h4>New order recieved</h4>
+                                        <p>#241 Premium plan for 2 years</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-blue"><i class="zwicon-calendar-never"></i></span>
+                                    <div class="listview__content">
+                                        <h4>Upcoming event</h4>
+                                        <p>Meeting with Kane Williamson in 8 hours</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-pink"><i class="zwicon-exclamation-triangle"></i></span>
+                                    <div class="listview__content">
+                                        <h4>Server limit reached!</h4>
+                                        <p>Process reached over 75%</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-lime"><i class="zwicon-sale-badge"></i></span>
+                                    <div class="listview__content">
+                                        <h4>Sold an item</h4>
+                                        <p>#124 Samsung Galaxy S10 Plus</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-orange"><i class="zwicon-code"></i></span>
+                                    <div class="listview__content">
+                                        <h4>New issue filed</h4>
+                                        <p>#475 Web page not found</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div></div></div><div class="os-scrollbar os-scrollbar-horizontal os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar-corner"></div></div>
+                    </div>
+                </div>
+                <div class="notifications__panel" id="notifications-tasks" style="display: none;">
+                    <div class="sidebar__header">
+                        <i class="zwicon-arrow-left sidebar__close"></i>
+                        <h2>Ongoing Tasks <small>5 Pending tasks</small></h2>
+                    </div>
+
+                    <div class="notifications__body">
+                        <div class="scrollbar os-host os-theme-light os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-scrollbar-vertical-hidden os-host-transition"><div class="os-resize-observer-host"><div class="os-resize-observer observed" style="left: 0px; right: auto;"></div></div><div class="os-size-auto-observer" style="height: calc(100% + 1px); float: left;"><div class="os-resize-observer observed"></div></div><div class="os-content-glue" style="margin: -21px 0px; width: 0px; height: 0px;"></div><div class="os-padding"><div class="os-viewport os-viewport-native-scrollbars-invisible" style=""><div class="os-content" style="padding: 21px 0px; height: 100%; width: 100%;">
+                            <div class="listview listview--hover listview--truncate">
+
+                                
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>HTML5 Validation Report</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-blue" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>Google Chrome Extension</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-amber" role="progressbar" style="width: 43%" aria-valuenow="43" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>Social Intranet Projects</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-green" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>Bootstrap Admin Template</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-red" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>Youtube Client App</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-purple" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div></div></div><div class="os-scrollbar os-scrollbar-horizontal os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar-corner"></div></div>
+                    </div>
+                </div>
+            </aside>
                 <div class="sidebar navigation">
                     <div class="scrollbar">
                         <ul class="navigation__menu">

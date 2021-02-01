@@ -126,13 +126,13 @@
                 case "success":
                     toastr.success("Success","Successfully Signed In. Thanks for using AnGerNetwork. Redirecting...");  
 
-                    window.setTimeout(function() { window.location.href = 'index.php';}, 5000); 
+                    window.setTimeout(function() { window.location.href = 'index';}, 5000); 
                 break;
                 case "banned": 
-                    toastr.error("Your Account Has Been Banned"); window.setTimeout(function() { window.location.href = 'banned.php';}, 2000); 
+                    toastr.error("Your Account Has Been Banned"); window.setTimeout(function() { window.location.href = 'banned';}, 2000); 
                 break;
                 case "timeout": 
-                    toastr.error("Your Account Has Been Temporarily Banned"); window.setTimeout(function() { window.location.href = 'banned.php';}, 2000); 
+                    toastr.error("Your Account Has Been Temporarily Banned"); window.setTimeout(function() { window.location.href = 'banned';}, 2000); 
                 break;
                 case "no-exist": 
                     toastr.error("Your Username /  Password Was Incorrect"); 

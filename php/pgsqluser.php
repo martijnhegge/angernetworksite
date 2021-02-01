@@ -1,19 +1,17 @@
 <?php
 date_default_timezone_set('Australia/Brisbane');
-include "database.php";
-//include "./includes/translation.php";
+
+include "postgresql.php";
 include "emoji.php";
-// include "errorhandler.php";
-	    class user extends database{
+//include "errorhandler.php";
+	    class pgsqluser extends postgresql{
 		private $actual_url; 
 		private $useridactive;
-		//global $lang;global $lang;
 		public function __construct(){
 			global $ACTUALURL;
 			global $USERACTIVE;
 			$actual_url = $ACTUALURL;
 			$this->connect();
-			
 		}
 
 		public function lastUrl($url)
@@ -24,15 +22,16 @@ include "emoji.php";
 
 		public function initChecks(){
             $this->update("users", array("lastActive"=>date("Y-m-d"), "latestip"=>$_SERVER['HTTP_CF_CONNECTING_IP']), "id", $_SESSION['id']);
-            $queryu = $this->db->prepare("UPDATE `active_users` SET `last_active` = NOW(), `latestip` = :lip WHERE `userid` = :id");
+            $queryu = $this->db->prepare("UPDATE active_users SET last_active = NOW(), latestip = :lip WHERE userid = :id");
 			$queryu->execute(array("lip"=>$_SERVER['HTTP_CF_CONNECTING_IP'],"id"=>$_SESSION['id']));
-			$lang = 'fgfgf';
+            
+
             //$this->update("active_users",array("last_active" =>"NOW()", "latestip"=>$_SERVER['HTTP_CF_CONNECTING_IP']), "userid", $_SESSION['id']);
 			if(!$_SESSION['id']){
 				$_SESSION['last-url'] = $actual_url;
 				header('Location: sign_in');
 			}else{
-				$query = $this->db->prepare("SELECT * FROM `bans` WHERE `userid` = :id");
+				$query = $this->db->prepare("SELECT * FROM bans WHERE userid = :id");
 				$query->execute(array("id"=>$_SESSION['id']));
 				$result = $query->fetch(PDO::FETCH_ASSOC);
 				if($result)
@@ -43,7 +42,7 @@ include "emoji.php";
 				}
 				else
 				{
-					$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+					$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 					$query->execute(array("id"=>$_SESSION['id']));
 					$result = $query->fetch(PDO::FETCH_ASSOC);
 					if($result['username'] == NULL)
@@ -64,7 +63,7 @@ include "emoji.php";
             return $randomString;
         }
 	    public function setUserLastAct($id){
-	        $result = $this->db->prepare("UPDATE `active_users` SET `lastact` = :lastact WHERE `userid` = :id");
+	        $result = $this->db->prepare("UPDATE active_users SET lastact = :lastact WHERE userid = :id");
 		    $result->execute(array("lastact" => time(), "id" => $id));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
@@ -74,7 +73,7 @@ include "emoji.php";
 			return $this->select($what, $table, "username","id", $username, $id)[0][0];
 		}
 		public function testuidbyname($username){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :uname");
+			$query = $this->db->prepare("SELECT * FROM users WHERE username = :uname");
 			$query->execute(array('uname' =>$username));
 			$uid = $query->fetchAll();
 			return $uid['id'];
@@ -89,7 +88,7 @@ include "emoji.php";
 			return $this->select($what, $table, "id", $id)[0][0];
 		}
 		public function getWhoIsOnline(){
-			$query = $this->db->prepare("SELECT au.*, users.pic FROM `active_users` au LEFT JOIN `users` on users.id = au.userid WHERE au.lastactivity >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
+			$query = $this->db->prepare("SELECT au.*, users.pic FROM active_users au LEFT JOIN users on users.id = au.userid WHERE au.lastactivity >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 			$query->execute();
 			$rowCount = $query->fetchAll();
 			foreach($rowCount as $row){	
@@ -123,7 +122,7 @@ include "emoji.php";
 			}
 		}
 		public function getWhoIsOnline1(){
-			$query = $this->db->prepare("SELECT * FROM `users`");
+			$query = $this->db->prepare("SELECT * FROM users");
 			$query->execute();
 			$rowCount = $query->fetchAll();
 			foreach($rowCount as $row){	
@@ -157,7 +156,7 @@ include "emoji.php";
 			}
 		}
 	    /*public function getWhoIsOnline11(){
-			$query = $this->db->prepare("SELECT * FROM `active_users`  WHERE `userid` = :id AND `last_active` = :active");
+			$query = $this->db->prepare("SELECT * FROM active_users  WHERE userid = :id AND last_active = :active");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$query->execute();
 			$rowCount = $query->fetchAll();
@@ -205,7 +204,7 @@ include "emoji.php";
         	}
 		}*/
 		public function getWhosOnlineColor($uid){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>self::sanitize($uid)));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 			switch($result['admin']){
@@ -247,7 +246,7 @@ include "emoji.php";
 		}
 		public function getUserHasTineUrl()
 		{
-			$result = $this->db->prepare("SELECT * FROM `tiny_url` WHERE `id` = :id"); 
+			$result = $this->db->prepare("SELECT * FROM tiny_url WHERE id = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$row = $result->fetchAll();
     		if($row['id'])
@@ -269,7 +268,7 @@ include "emoji.php";
 			));
 
 			return "inserted";
-			// $result = $this->db->prepare("INSERT INTO `tiny_url` (`userid`,`url`,) VALUES (:userid, :url)"); 
+			// $result = $this->db->prepare("INSERT INTO tiny_url (userid,url,) VALUES (:userid, :url)"); 
    //  		$result->execute(array("userid"=>$_SESSION['id'], "url"=>$turl));
    //  		$row = $result->fetchAll();
    //  		if($row['id'])
@@ -283,32 +282,32 @@ include "emoji.php";
 		    //return file_get_contents('http://tinyurl.com/api-create.php?url=' . $url);
 		}
 		public function isOnline()
-		{   $result = $this->db->prepare("SELECT count(*) FROM `users` WHERE `id` = :id"); 
+		{   $result = $this->db->prepare("SELECT count(*) FROM users WHERE id = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;	
 		}
         public function getAllUsersIPStorage(){
-			$result = $this->db->prepare("SELECT count(*) FROM `fe`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM fe"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getAllUserIPStorage(){
-			$result = $this->db->prepare("SELECT count(*) FROM `fe` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM fe WHERE userid = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getAllUserIPStorageLogs($GAY){
-			$result = $this->db->prepare("SELECT count(*) FROM `fe` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM fe WHERE userid = :id"); 
     		$result->execute(array("id"=>$GAY));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 
         public function usersOnline(){
-            $result = $this->db->prepare("SELECT count(*) FROM `users` WHERE `active` = :active");
+            $result = $this->db->prepare("SELECT count(*) FROM users WHERE active = :active");
 			$result->execute(array("active"=>"1"));
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
@@ -316,7 +315,7 @@ include "emoji.php";
         }
      
         public function setUserStorage(){
-            $query = $this->db->prepare("SELECT * FROM `fe` WHERE userid = :id ORDER BY `id` DESC");
+            $query = $this->db->prepare("SELECT * FROM fe WHERE userid = :id ORDER BY id DESC");
             $query->execute(array("id"=>$_SESSION['id']));
             $res = $query->fetchAll();
             foreach($res as $row){
@@ -341,14 +340,14 @@ include "emoji.php";
             }
         }
         public function getUsersOnlineCount(){
-			$result = $this->db->prepare("SELECT count(*) FROM `users` WHERE `OnlineStatus` = :OnlineStatus");
+			$result = $this->db->prepare("SELECT count(*) FROM users WHERE OnlineStatus = :OnlineStatus");
 			$result->execute(array("OnlineStatus"=>"Online"));
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
         public function getNewsCount(){
-			$result = $this->db->prepare("SELECT count(*) FROM `news`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM news"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
@@ -357,7 +356,7 @@ include "emoji.php";
 			return $this->select("username", "users", "id", $_SESSION['id'])[0][0];
 		}
 		public function getDownloadCount(){
-			$query = $this->db->prepare("SELECT * FROM `downloads`");
+			$query = $this->db->prepare("SELECT * FROM downloads");
             $query->execute();
             $rowCount = $query->fetchAll();
             foreach($rowCount as $row){
@@ -365,25 +364,25 @@ include "emoji.php";
     		return $rowCount;
 		}
 		public function getUserLogs(){
-			$result = $this->db->prepare("SELECT count(*) FROM `user_logs` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM user_logs WHERE userid = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}	
 		public function getUsersLogsCount(){
-			$result = $this->db->prepare("SELECT count(*) FROM `user_logs` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM user_logs WHERE userid = :id"); 
     		$result->execute(array("id"=>$yamum));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getPulledLogsCount(){
-			$result = $this->db->prepare("SELECT count(*) FROM `user_logs`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM user_logs"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function isUser(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['admin'] == "0"){
@@ -393,7 +392,7 @@ include "emoji.php";
 			}
 		}
         public function isAdmin(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['admin'] > "1"){
@@ -403,7 +402,7 @@ include "emoji.php";
 			}
 		}
 		public function isMod(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['admin']  == "2"){
@@ -413,7 +412,7 @@ include "emoji.php";
 			}
 		}
 		public function areAdmin(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['admin'] == "1"){
@@ -423,7 +422,7 @@ include "emoji.php";
 			}
 		}
 		public function areMod(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['admin'] == "2"){
@@ -433,7 +432,7 @@ include "emoji.php";
 			}
 		}
 		public function areUser(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['admin'] == "0"){
@@ -443,7 +442,7 @@ include "emoji.php";
 			}
 		}
 		public function getShoutColor($uid){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>self::sanitize($uid)));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 			switch($result['admin']){
@@ -454,7 +453,7 @@ include "emoji.php";
 			}
 		}
 		public function getLEVEL2($uid){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>self::sanitize($uid)));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 		    if ($this->isAdmin())
@@ -477,7 +476,7 @@ include "emoji.php";
 			}
 		}
 		public function getLEVEL(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>self::sanitize($_SESSION['id'])));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 		    if ($this->isAdmin())
@@ -504,7 +503,7 @@ include "emoji.php";
 			}
 		}
 		public function getLEVEL3($uid){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>self::sanitize($uid)));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 		    if ($this->isAdmin())
@@ -528,7 +527,7 @@ include "emoji.php";
 		}
 		public function getUserNoAccesBooter()
 		{
-			$query = $this->db->prepare("SELECT * FROM `nobooter_access` WHERE `userid` = :id");
+			$query = $this->db->prepare("SELECT * FROM nobooter_access WHERE userid = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 			if($result)
@@ -567,7 +566,7 @@ include "emoji.php";
 			}
 		}	
 		public function getShoutIcon($uid){
-			$query = $this->db->prepare("SELECT * FROM `store` WHERE `userid` = :id");
+			$query = $this->db->prepare("SELECT * FROM store WHERE userid = :id");
 			$query->execute(array("id"=>self::sanitize($uid)));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 			switch($result['currentlyActive']){
@@ -583,7 +582,7 @@ include "emoji.php";
 			}
 		}
 		public function isShoutBoxLocked(){
-			$query = $this->db->prepare("SELECT * FROM `site_settings` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM site_settings WHERE id = :id");
 			$query->execute(array("id"=>"1"));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['Shoutbox'] == "0")
@@ -596,7 +595,7 @@ include "emoji.php";
 			}
 		}
 		public function checkIfPaid(){
-			$query = $this->db->prepare("SELECT `hwid` FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT hwid FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetchColumn();
 			if($res != ""){
@@ -606,7 +605,7 @@ include "emoji.php";
 			}
 		}
 		public function isUnpaid(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['license'] == ""){
@@ -616,7 +615,7 @@ include "emoji.php";
 			}
 		}
 		public function isreseller(){
-			$query = $this->db->prepare("SELECT * FROM `reseller` WHERE `userid` = :id");
+			$query = $this->db->prepare("SELECT * FROM reseller WHERE userid = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res){
@@ -656,7 +655,7 @@ include "emoji.php";
 			echo '<footer id="footer">Copyright AnGerNetwork © '.date("Y").'</footer>';	
 		}
 		public function Navigation(){
-	    $query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+	    $query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 		$query->execute(array("id"=>self::sanitize($_SESSION['id'])));
 		$result = $query->fetch(PDO::FETCH_ASSOC);
 		if(strtotime($result['expiry_date']) > time())
@@ -816,7 +815,7 @@ include "emoji.php";
 			}
 	    }
 		public function AdminNavigation(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>self::sanitize($_SESSION['id'])));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 			if(strtotime($result['expiry_date']) > time()){
@@ -917,25 +916,25 @@ include "emoji.php";
 			}
 		}
 		public function getUserCountPaid(){
-			$result = $this->db->prepare("SELECT count(*) FROM `users` WHERE expiry_date > NOW();");
+			$result = $this->db->prepare("SELECT count(*) FROM users WHERE expiry_date > NOW();");
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getUserCountOnline(){
-			$result = $this->db->prepare("SELECT count(*) FROM `active_users` WHERE `lastactivity` >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
+			$result = $this->db->prepare("SELECT count(*) FROM active_users WHERE lastactivity >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getUserCount(){
-			$result = $this->db->prepare("SELECT count(*) FROM `users`");
+			$result = $this->db->prepare("SELECT count(*) FROM users");
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getTotalTickets(){
-			$result = $this->db->prepare("SELECT count(*) FROM `tickets`");
+			$result = $this->db->prepare("SELECT count(*) FROM tickets");
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
@@ -943,41 +942,41 @@ include "emoji.php";
 
 		public function getlastmac($id)
 		{
-			return $this->select("spin_for_credits_timeout", "credits", "`UserId`", $id)[0][0];
+			return $this->select("spin_for_credits_timeout", "credits", "UserId", $id)[0][0];
 		}
 		public function getTicketsOpen(){
-			$result = $this->db->prepare("SELECT count(*) FROM `tickets` WHERE `status` = :status"); 
+			$result = $this->db->prepare("SELECT count(*) FROM tickets WHERE status = :status"); 
 			$result->execute(array("status"=>'<span class="label label-success">OPEN</span>'));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getTicketsResolved(){
-			$result = $this->db->prepare("SELECT count(*) FROM `tickets` WHERE `status` = :status"); 
+			$result = $this->db->prepare("SELECT count(*) FROM tickets WHERE status = :status"); 
 			$result->execute(array("status"=>'<span class="label label-danger">RESOLVED</span>'));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getTicketsClosed(){
-			$result = $this->db->prepare("SELECT count(*) FROM `tickets` WHERE `status` = :status"); 
+			$result = $this->db->prepare("SELECT count(*) FROM tickets WHERE status = :status"); 
 			$result->execute(array("status"=>'<span class="label label-danger">CLOSED</span>'));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getProfit(){
-			$result = $this->db->prepare("SELECT sum(price_paid) FROM `payments`"); 
+			$result = $this->db->prepare("SELECT sum(price_paid) FROM payments"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getBans(){
-			$result = $this->db->prepare("SELECT count(*) FROM `bans`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM bans"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getUserbooter($id)
 		{
-			 $query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :license");
+			 $query = $this->db->prepare("SELECT * FROM users WHERE id = :license");
 			 $query->execute(array("license"=>$id));
 			 $result2 = $query->fetch(PDO::FETCH_ASSOC);
 			 if($result2)
@@ -998,7 +997,7 @@ include "emoji.php";
 		}
 		public function getUsertime2($id)
 		{
-			 $query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :license");
+			 $query = $this->db->prepare("SELECT * FROM users WHERE id = :license");
 			 $query->execute(array("license"=>$id));
 			 $result2 = $query->fetch(PDO::FETCH_ASSOC);
 			 if($result2)
@@ -1023,7 +1022,7 @@ include "emoji.php";
 		}
 		public function getUsertime($id)
 		{
-			 $query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :license");
+			 $query = $this->db->prepare("SELECT * FROM users WHERE id = :license");
 			 $query->execute(array("license"=>$id));
 			 $result2 = $query->fetch(PDO::FETCH_ASSOC);
 			 if($result2)
@@ -1054,7 +1053,7 @@ include "emoji.php";
 		}
 		public function getUsertimeByName($name)
 		{
-			 $query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+			 $query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 			 $query->execute(array("username"=>$name));
 			 $result2 = $query->fetch(PDO::FETCH_ASSOC);
 			 if($result2)
@@ -1084,7 +1083,7 @@ include "emoji.php";
 			 }
 		}
 		public function getUserPSNHistory(){
-			$query = $con->db->prepare("SELECT * FROM `users`");
+			$query = $con->db->prepare("SELECT * FROM users");
             $query->execute();
             $res = $query->fetchAll();
             foreach($res as $row){
@@ -1098,111 +1097,111 @@ include "emoji.php";
             }
 		}
 		public function getLastResolved(){
-			$result = $this->db->prepare("SELECT * FROM `RESOLVES` ORDER BY `id` DESC");
+			$result = $this->db->prepare("SELECT * FROM RESOLVES ORDER BY id DESC");
 			$result->execute();
 			foreach($result->fetchAll() as $last_logged)
 				return $last_logged['gamertag'];
 		}
 		public function getTotalResolveCount(){
-			$result = $this->db->prepare("SELECT count(*) FROM `RESOLVES`");
+			$result = $this->db->prepare("SELECT count(*) FROM RESOLVES");
     		$result->execute();
 
     		return $result->fetchColumn(0);
 		}
 		public function getTodayResolveCount(){
-			$result = $this->db->prepare("SELECT COUNT(*) FROM `RESOLVES` ORDER BY `time` = :time_today DESC");
+			$result = $this->db->prepare("SELECT COUNT(*) FROM RESOLVES ORDER BY time = :time_today DESC");
     		$result->execute(array("time_today"=>date("")));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getConsoleStatics($console){
-			$result_psn = $this->db->prepare("SELECT count(*) FROM `PSNIPHISTORY` WHERE `console` = :console"); 
+			$result_psn = $this->db->prepare("SELECT count(*) FROM PSNIPHISTORY WHERE console = :console"); 
 			$result_psn->execute(array("console"=>$console));
 			$rowCountp = $result_psn->fetchColumn(0);
 
-			$result_xbox = $this->db->prepare("SELECT count(*) FROM `XBOXIPHISTORY` WHERE `console` = :console"); 
+			$result_xbox = $this->db->prepare("SELECT count(*) FROM XBOXIPHISTORY WHERE console = :console"); 
 			$result_xbox->execute(array("console"=>$console));
 			$rowCountx = $result_xbox->fetchColumn(0);
 
-			$result_all = $this->db->prepare("SELECT count(*) FROM `ALLHISTORY` WHERE `console` = :console"); 
+			$result_all = $this->db->prepare("SELECT count(*) FROM ALLHISTORY WHERE console = :console"); 
 			$result_all->execute(array("console"=>$console));
 			$rowCounta = $result_all->fetchColumn(0);
 
     		return $rowCountp + $rowCountx + $rowCounta;
 		}
 		public function getTodayALLIPCount(){
-			$result_psn_today = $this->db->prepare("SELECT count(*) FROM `PSNIPHISTORY` ORDER BY `time` = :today DESC");
+			$result_psn_today = $this->db->prepare("SELECT count(*) FROM PSNIPHISTORY ORDER BY time = :today DESC");
     		$result_psn_today->execute(array("today"=>time("d-m-Y H:i")));
     		$psn_today = $result_psn_today->fetchColumn(0);
 
-			$result_xbox_today = $this->db->prepare("SELECT count(*) FROM `XBOXIPHISTORY` ORDER BY `time` = :today DESC");
+			$result_xbox_today = $this->db->prepare("SELECT count(*) FROM XBOXIPHISTORY ORDER BY time = :today DESC");
     		$result_xbox_today->execute(array("today"=>time("d-m-Y H:i")));
     		$xbox_today = $result_xbox_today->fetchColumn(0);
             
-            $result_all_today = $this->db->prepare("SELECT count(*) FROM `ALLHISTORY` ORDER BY `time` = :today DESC");
+            $result_all_today = $this->db->prepare("SELECT count(*) FROM ALLHISTORY ORDER BY time = :today DESC");
     		$result_all_today->execute(array("today"=>time("d-m-Y H:i")));
     		$all_today = $result_all_today->fetchColumn(0);
 
 			return $psn_today + $xbox_today + $all_today;
 		}
 		public function getTotalPulledIPCount(){
-			$result_xbox = $this->db->prepare("SELECT count(*) FROM `XBOXIPHISTORY`"); 
+			$result_xbox = $this->db->prepare("SELECT count(*) FROM XBOXIPHISTORY"); 
     		$result_xbox->execute();
     		$rowCountx = $result_xbox->fetchColumn(0);
     		
-    		$result_psn = $this->db->prepare("SELECT count(*) FROM `PSNIPHISTORY`"); 
+    		$result_psn = $this->db->prepare("SELECT count(*) FROM PSNIPHISTORY"); 
     		$result_psn->execute();
     		$rowCountp = $result_psn->fetchColumn(0);
     		
-    		$result_all = $this->db->prepare("SELECT count(*) FROM `ALLHISTORY`"); 
+    		$result_all = $this->db->prepare("SELECT count(*) FROM ALLHISTORY"); 
     		$result_all->execute();
     		$rowCounta = $result_all->fetchColumn(0);
     		return $rowCountx + $rowCountp + $rowCounta;
 		}
 		public function getUserIPCountPSN(){
-			$result = $this->db->prepare("SELECT count(*) FROM `PSN_IPHISTORY` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM PSN_IPHISTORY WHERE userid = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}	
 		public function getUsersIPCountPSN(){
-			$result = $this->db->prepare("SELECT count(*) FROM `PSN_IPHISTORY` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM PSN_IPHISTORY WHERE userid = :id"); 
     		$result->execute(array("id"=>$yamum));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getPulledIPCountPSN(){
-			$result = $this->db->prepare("SELECT count(*) FROM `PSN_IPHISTORY`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM PSN_IPHISTORY"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
         public function getUserIPCountAll(){
-			$result = $this->db->prepare("SELECT count(*) FROM `ALLHISTORY` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM ALLHISTORY WHERE userid = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}	
 		public function getUsersIPCountAll(){
-			$result = $this->db->prepare("SELECT count(*) FROM `ALLHISTORY` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM ALLHISTORY WHERE userid = :id"); 
     		$result->execute(array("id"=>$yamum));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getPulledIPCountAll(){
-			$result = $this->db->prepare("SELECT count(*) FROM `ALLHISTORY`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM ALLHISTORY"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getUserIPSCountPSN(){
-			$result = $this->db->prepare("SELECT count(*) FROM `PSNIPHISTORY` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM PSNIPHISTORY WHERE userid = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}	
 		public function getUsersIPSCountPSN(){
-			$result = $this->db->prepare("SELECT count(*) FROM `PSNIPHISTORY` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM PSNIPHISTORY WHERE userid = :id"); 
     		$result->execute(array("id"=>$yamum));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
@@ -1213,61 +1212,61 @@ include "emoji.php";
     		return $rowCount;
 		}	
 		public function getPulledIPSCountPSN(){
-			$result = $this->db->prepare("SELECT count(*) FROM `PSNIPHISTORY`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM PSNIPHISTORY"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}	
 		public function getUserIPCountXBOX(){
-			$result = $this->db->prepare("SELECT count(*) FROM `XBOXIPHISTORY` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM XBOXIPHISTORY WHERE userid = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}	
 		public function getUsersIPCountXBOX(){
-			$result = $this->db->prepare("SELECT count(*) FROM `XBOXIPHISTORY` WHERE `userid` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM XBOXIPHISTORY WHERE userid = :id"); 
     		$result->execute(array("id"=>$yamum));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getPulledIPCountXBOX(){
-			$result = $this->db->prepare("SELECT count(*) FROM `XBOXIPHISTORY`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM XBOXIPHISTORY"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getAllUserMenuLogins_1(){
-			$result = $this->db->prepare("SELECT count(*) FROM `tool_logs_1`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM tool_logs_1"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getUserMenuLogins_1(){
-			$result = $this->db->prepare("SELECT count(*) FROM `tool_logs_1` WHERE `user_id` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM tool_logs_1 WHERE user_id = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getUsertoolLogins_1($IAS){
-			$result = $this->db->prepare("SELECT count(*) FROM `tool_logs_1` WHERE `user_id` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM tool_logs_1 WHERE user_id = :id"); 
     		$result->execute(array("id"=>$IAS));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getAllUserMenuLogins(){
-			$result = $this->db->prepare("SELECT count(*) FROM `tool_logs`"); 
+			$result = $this->db->prepare("SELECT count(*) FROM tool_logs"); 
     		$result->execute();
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getUserMenuLogins(){
-			$result = $this->db->prepare("SELECT count(*) FROM `tool_logs` WHERE `user_id` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM tool_logs WHERE user_id = :id"); 
     		$result->execute(array("id"=>$_SESSION['id']));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
 		}
 		public function getUsertoolLogins($IAS){
-			$result = $this->db->prepare("SELECT count(*) FROM `tool_logs` WHERE `user_id` = :id"); 
+			$result = $this->db->prepare("SELECT count(*) FROM tool_logs WHERE user_id = :id"); 
     		$result->execute(array("id"=>$IAS));
     		$rowCount = $result->fetchColumn(0);
     		return $rowCount;
@@ -1311,12 +1310,12 @@ include "emoji.php";
 										));
 									break;
 									case "gift":
-										$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+										$query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 										$query->execute(array("username"=>$exp[2]));
 										$result = $query->fetch(PDO::FETCH_ASSOC);
 										if($result)
 										{
-											$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `username` = :username");
+											$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE username = :username");
 											$query->execute(array("credits"=>$result['credits'] + $exp[3],"username"=>self::sanitize($exp[2])));
 											$this->insert_query("shoutbox", array(
 												"message"=>self::sanitize(":info: ".$this->getFromTable_MyId("username", "users")." Gifted ".$exp[2]." ".$exp[3]." Credits."),
@@ -1334,12 +1333,12 @@ include "emoji.php";
 										}
 									break;
 									case "ban":
-										$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+										$query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 										$query->execute(array("username"=>$exp[2]));
 										$result = $query->fetch(PDO::FETCH_ASSOC);
 										if($result)
 										{
-											$query = $this->db->prepare("UPDATE `users` SET `shoutBanned` = :shoutBanned WHERE `username` = :username");
+											$query = $this->db->prepare("UPDATE users SET shoutBanned = :shoutBanned WHERE username = :username");
 											$query->execute(array("shoutBanned"=>"1","username"=>$exp[2]));
 											$this->insert_query("shoutbox", array(
 												"message"=>self::sanitize(":info: ".$this->getFromTable_MyId("username", "users")." banned ".$exp[2]." from the shoutbox."),
@@ -1357,12 +1356,12 @@ include "emoji.php";
 										}
 									break;
 									case "unban":
-										$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+										$query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 										$query->execute(array("username"=>$exp[2]));
 										$result = $query->fetch(PDO::FETCH_ASSOC);
 										if($result)
 										{
-											$query = $this->db->prepare("UPDATE `users` SET `shoutBanned` = :shoutBanned WHERE `username` = :username");
+											$query = $this->db->prepare("UPDATE users SET shoutBanned = :shoutBanned WHERE username = :username");
 											$query->execute(array("shoutBanned"=>"0","username"=>$exp[2]));
 											$this->insert_query("shoutbox", array(
 												"message"=>self::sanitize(":info: ".$this->getFromTable_MyId("username", "users")." unbanned ".$exp[2]." from the shoutbox."),
@@ -1381,12 +1380,12 @@ include "emoji.php";
 									break;
 								}
 							}else{
-								        $query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+								        $query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 										$query->execute(array("username"=>$this->getFromTable_MyId("username", "users")));
 										$result = $query->fetch(PDO::FETCH_ASSOC);
 										if($result)
 										{
-											$query = $this->db->prepare("UPDATE `users` SET `shoutBanned` = :shoutBanned WHERE `username` = :username");
+											$query = $this->db->prepare("UPDATE users SET shoutBanned = :shoutBanned WHERE username = :username");
 											$query->execute(array("shoutBanned"=>"1","username"=>$this->getFromTable_MyId("username", "users")));
 											$this->insert_query("shoutbox", array(
 												"message"=>self::sanitize(":info: ".$this->getFromTable_MyId("username", "users")." Tried To Access An Admin Conmmmand! ".$this->getFromTable_MyId("username", "users")." Has Been Banned From The Shoutbox"),
@@ -1454,12 +1453,12 @@ include "emoji.php";
 										));
 									break;
 									case "gift":
-										$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+										$query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 										$query->execute(array("username"=>$exp[2]));
 										$result = $query->fetch(PDO::FETCH_ASSOC);
 										if($result)
 										{
-											$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `username` = :username");
+											$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE username = :username");
 											$query->execute(array("credits"=>$result['credits'] + $exp[3],"username"=>self::sanitize($exp[2])));
 											$this->insert_query("shoutbox2", array(
 												"message"=>self::sanitize(":info: ".$this->getFromTable_MyId("username", "users")." Gifted ".$exp[2]." ".$exp[3]." Credits."),
@@ -1477,12 +1476,12 @@ include "emoji.php";
 										}
 									break;
 									case "ban":
-										$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+										$query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 										$query->execute(array("username"=>$exp[2]));
 										$result = $query->fetch(PDO::FETCH_ASSOC);
 										if($result)
 										{
-											$query = $this->db->prepare("UPDATE `users` SET `shoutBanned` = :shoutBanned WHERE `username` = :username");
+											$query = $this->db->prepare("UPDATE users SET shoutBanned = :shoutBanned WHERE username = :username");
 											$query->execute(array("shoutBanned"=>"1","username"=>$exp[2]));
 											$this->insert_query("shoutbox2", array(
 												"message"=>self::sanitize(":info: ".$this->getFromTable_MyId("username", "users")." banned ".$exp[2]." from the shoutbox."),
@@ -1500,12 +1499,12 @@ include "emoji.php";
 										}
 									break;
 									case "unban":
-										$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+										$query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 										$query->execute(array("username"=>$exp[2]));
 										$result = $query->fetch(PDO::FETCH_ASSOC);
 										if($result)
 										{
-											$query = $this->db->prepare("UPDATE `users` SET `shoutBanned` = :shoutBanned WHERE `username` = :username");
+											$query = $this->db->prepare("UPDATE users SET shoutBanned = :shoutBanned WHERE username = :username");
 											$query->execute(array("shoutBanned"=>"0","username"=>$exp[2]));
 											$this->insert_query("shoutbox2", array(
 												"message"=>self::sanitize(":info: ".$this->getFromTable_MyId("username", "users")." unbanned ".$exp[2]." from the shoutbox."),
@@ -1524,12 +1523,12 @@ include "emoji.php";
 									break;
 								}
 							}else{
-								$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+								$query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 										$query->execute(array("username"=>$this->getFromTable_MyId("username", "users")));
 										$result = $query->fetch(PDO::FETCH_ASSOC);
 										if($result)
 										{
-											$query = $this->db->prepare("UPDATE `users` SET `shoutBanned` = :shoutBanned WHERE `username` = :username");
+											$query = $this->db->prepare("UPDATE users SET shoutBanned = :shoutBanned WHERE username = :username");
 											$query->execute(array("shoutBanned"=>"1","username"=>$this->getFromTable_MyId("username", "users")));
 											$this->insert_query("shoutbox2", array(
 												"message"=>self::sanitize(":info: ".$this->getFromTable_MyId("username", "users")." Tried To Access An Admin Conmmmand! ".$this->getFromTable_MyId("username", "users")." Has Been Banned From The Shoutbox"),
@@ -1573,7 +1572,7 @@ include "emoji.php";
 			}
 		}
 		public function getShoutboxShouts(){
-			$query = $this->db->prepare("SELECT * FROM `shoutbox` ORDER BY `time` DESC LIMIT 30");
+			$query = $this->db->prepare("SELECT * FROM shoutbox ORDER BY time DESC LIMIT 30");
 			$query->execute();
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -1658,7 +1657,7 @@ include "emoji.php";
 			}
 		}
 		public function getShoutboxShouts_reserve(){
-			$query = $this->db->prepare("SELECT * FROM `shoutbox` ORDER BY `time` DESC LIMIT 30");
+			$query = $this->db->prepare("SELECT * FROM shoutbox ORDER BY time DESC LIMIT 30");
 			$query->execute();
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -1743,7 +1742,7 @@ include "emoji.php";
 			}
 		}
 		public function getShoutboxShouts7(){
-			$query = $this->db->prepare("SELECT * FROM `shoutbox` ORDER BY `time` DESC LIMIT 30");
+			$query = $this->db->prepare("SELECT * FROM shoutbox ORDER BY time DESC LIMIT 30");
 			$query->execute();
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -1864,7 +1863,7 @@ include "emoji.php";
 			}
 		}	
 		public function getAdminShoutboxShouts(){
-			$query = $this->db->prepare("SELECT * FROM `shoutbox2` ORDER BY `time` DESC LIMIT 30");
+			$query = $this->db->prepare("SELECT * FROM shoutbox2 ORDER BY time DESC LIMIT 30");
 			$query->execute();
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -1985,7 +1984,7 @@ include "emoji.php";
 			}
 		}
 		public function getLastLogs(){
-			$query = $this->db->prepare("SELECT * FROM `tool_logs` ORDER BY `time` DESC LIMIT 5");
+			$query = $this->db->prepare("SELECT * FROM tool_logs ORDER BY time DESC LIMIT 5");
 			$query->execute();
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2002,7 +2001,7 @@ include "emoji.php";
 			}
 		}
 		public function getLastLogs_1(){
-			$query = $this->db->prepare("SELECT * FROM `tool_logs` ORDER BY `time` DESC LIMIT 5");
+			$query = $this->db->prepare("SELECT * FROM tool_logs ORDER BY time DESC LIMIT 5");
 			$query->execute();
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2019,7 +2018,7 @@ include "emoji.php";
 			}
 		}
 		public function spinForCredits(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res){
@@ -2027,7 +2026,7 @@ include "emoji.php";
 				{
 					$amount = rand(0, 50);
 					$total_creds = $res['credits'] + $amount;
-					$query = $this->db->prepare("UPDATE `users` SET `spin_for_credits_timeout` = :thedate, `credits` = :creds WHERE `id` = :id");
+					$query = $this->db->prepare("UPDATE users SET spin_for_credits_timeout = :thedate, credits = :creds WHERE id = :id");
 					$query->execute(array("thedate"=>date('Y-m-d h:i:s'),"creds"=>$amount, "id"=>$_SESSION['id']));
 					if($amount == 0){
 						return '<div class="alert alert-danger text-center">Unlucky, You Didnt Win Any Crredits!</div>';
@@ -2043,7 +2042,7 @@ include "emoji.php";
 		
         public function spinForCredits2()
 		{
-			$query = $this->db->prepare("SELECT * FROM `credits` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM credits WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res)
@@ -2052,7 +2051,7 @@ include "emoji.php";
 				{
 					$amount = $res['credits'] + rand(10, 100);
 					$maccer = "";
-					$query = $this->db->prepare("UPDATE `credits` SET `spin_for_credits_timeout` = :thedate, `Credits` = :creds WHERE `id` = :id");
+					$query = $this->db->prepare("UPDATE credits SET spin_for_credits_timeout = :thedate, Credits = :creds WHERE id = :id");
 					$query->execute(array("thedate"=>date('Y-m-d h:i:s'),"creds"=>$amount, "id"=>$_SESSION['id']));
 				    $this->update("users", array("mac"=>""), "id", $_SESSION['id']);
 					header("Location: profile.php?action=macreset");
@@ -2062,11 +2061,11 @@ include "emoji.php";
 		}
 		public function purchaseItem($req){
 			//$req = 1>8
-			$query = $this->db->prepare("SELECT * FROM `store` WHERE `userid` = :id");
+			$query = $this->db->prepare("SELECT * FROM store WHERE userid = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res){
-				$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+				$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 				$query->execute(array("id"=>$_SESSION['id']));
 				$result = $query->fetch(PDO::FETCH_ASSOC);	
 				if($result){
@@ -2074,9 +2073,9 @@ include "emoji.php";
 						case 1:
 							if($result['credits']>=10)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 10, "id"=>$_SESSION['id']));
-								$query = $this->db->prepare("UPDATE `store` SET `1` = :t WHERE `userid` = :id");
+								$query = $this->db->prepare("UPDATE store SET 1 = :t WHERE userid = :id");
 								$query->execute(array("t"=>1, "id"=>$_SESSION['id']));
 								return '<div class="alert alert-success text-center">You Purcahsed An Item, You Used 10 Of Your Credits!</div>';
 							}
@@ -2087,9 +2086,9 @@ include "emoji.php";
 						case 2:
 							if($result['credits']>=20)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 20, "id"=>$_SESSION['id']));
-								$query = $this->db->prepare("UPDATE `store` SET `2` = :t WHERE `userid` = :id");
+								$query = $this->db->prepare("UPDATE store SET 2 = :t WHERE userid = :id");
 								$query->execute(array("t"=>1, "id"=>$_SESSION['id']));
 								return '<div class="alert alert-success text-center">You Purcahsed An Item, You Used 20 Of Your Credits!</div>';
 							}
@@ -2100,9 +2099,9 @@ include "emoji.php";
 						case 3:
 							if($result['credits']>=30)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 30, "id"=>$_SESSION['id']));
-								$query = $this->db->prepare("UPDATE `store` SET `3` = :t WHERE `userid` = :id");
+								$query = $this->db->prepare("UPDATE store SET 3 = :t WHERE userid = :id");
 								$query->execute(array("t"=>1, "id"=>$_SESSION['id']));
 								return '<div class="alert alert-success text-center">You Purcahsed An Item, You Used 30 Of Your Credits!</div>';
 							}
@@ -2113,9 +2112,9 @@ include "emoji.php";
 						case 4:
 							if($result['credits']>=80)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 80, "id"=>$_SESSION['id']));
-								$query = $this->db->prepare("UPDATE `store` SET `4` = :t WHERE `userid` = :id");
+								$query = $this->db->prepare("UPDATE store SET 4 = :t WHERE userid = :id");
 								$query->execute(array("t"=>1, "id"=>$_SESSION['id']));
 								return '<div class="alert alert-success text-center">You Purcahsed An Item, You Used 80 Of Your Credits!</div>';
 							}
@@ -2126,9 +2125,9 @@ include "emoji.php";
 						case 5:
 							if($result['credits']>=80)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 80, "id"=>$_SESSION['id']));
-								$query = $this->db->prepare("UPDATE `store` SET `5` = :t WHERE `userid` = :id");
+								$query = $this->db->prepare("UPDATE store SET 5 = :t WHERE userid = :id");
 								$query->execute(array("t"=>1, "id"=>$_SESSION['id']));
 								return '<div class="alert alert-success text-center">You Purcahsed An Item, You Used 80 Of Your Credits!</div>';
 							}
@@ -2139,9 +2138,9 @@ include "emoji.php";
 						case 6:
 							if($result['credits']>=80)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 80, "id"=>$_SESSION['id']));
-								$query = $this->db->prepare("UPDATE `store` SET `6` = :t WHERE `userid` = :id");
+								$query = $this->db->prepare("UPDATE store SET 6 = :t WHERE userid = :id");
 								$query->execute(array("t"=>1, "id"=>$_SESSION['id']));
 								return '<div class="alert alert-success text-center">You Purcahsed An Item, You Used 80 Of Your Credits!</div>';
 							}
@@ -2152,9 +2151,9 @@ include "emoji.php";
 						case 7:
 							if($result['credits']>=80)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 80, "id"=>$_SESSION['id']));
-								$query = $this->db->prepare("UPDATE `store` SET `7` = :t WHERE `userid` = :id");
+								$query = $this->db->prepare("UPDATE store SET 7 = :t WHERE userid = :id");
 								$query->execute(array("t"=>1, "id"=>$_SESSION['id']));
 								return '<div class="alert alert-success text-center">You Purcahsed An Item, You Used 80 Of Your Credits!</div>';
 							}
@@ -2165,9 +2164,9 @@ include "emoji.php";
 						case 8:
 							if($result['credits']>=100)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 100, "id"=>$_SESSION['id']));
-								$query = $this->db->prepare("UPDATE `store` SET `8` = :t WHERE `userid` = :id");
+								$query = $this->db->prepare("UPDATE store SET 8 = :t WHERE userid = :id");
 								$query->execute(array("t"=>1, "id"=>$_SESSION['id']));
 								return '<div class="alert alert-success text-center">You Purcahsed An Item, You Used 100 Of Your Credits!</div>';
 							}
@@ -2178,9 +2177,9 @@ include "emoji.php";
 						case 9:
 							if($result['credits']>=250)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 250, "id"=>$_SESSION['id']));
-                                $query = $this->db->prepare("UPDATE `users` SET `max_ip_history` = :credits WHERE `id` = :id");
+                                $query = $this->db->prepare("UPDATE users SET max_ip_history = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['max_ip_history'] + 500, "id"=>$_SESSION['id']));
 								return '<div class="alert alert-success text-center">You Added An Extra 500 IP History Slots To Your Account, You Used 250 Of Your Credits!</div>';
 							}
@@ -2191,7 +2190,7 @@ include "emoji.php";
 						case 10:
 							if($result['credits']>=1000)
 							{
-								$query = $this->db->prepare("UPDATE `users` SET `credits` = :credits WHERE `id` = :id");
+								$query = $this->db->prepare("UPDATE users SET credits = :credits WHERE id = :id");
 								$query->execute(array("credits"=>$result['credits'] - 1000, "id"=>$_SESSION['id']));
                                 $date = new DateTime($result['expiry_date']);
                                 $today = new DateTime();
@@ -2229,7 +2228,7 @@ include "emoji.php";
 			return $this->select("totalAmount", "referralid", "userid", $_SESSION['id'])[0][0];
 		}
 		public function redeemReferral(){
-			$query = $this->db->prepare("SELECT * FROM `referralid` WHERE `userid` = :id");
+			$query = $this->db->prepare("SELECT * FROM referralid WHERE userid = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['currentAmount'] >= 5){
@@ -2241,7 +2240,7 @@ include "emoji.php";
 			}
 		}
 		public function getReferralLicenses(){
-			$query = $this->db->prepare("SELECT * FROM `redeemed_licenses` WHERE `userid` = :id");
+			$query = $this->db->prepare("SELECT * FROM redeemed_licenses WHERE userid = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2250,7 +2249,7 @@ include "emoji.php";
 		
 		}
 		public function getTheirReferralLicenses(){
-			$query = $this->db->prepare("SELECT * FROM `redeemed_licenses` WHERE `userid` = :id");
+			$query = $this->db->prepare("SELECT * FROM redeemed_licenses WHERE userid = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2259,7 +2258,7 @@ include "emoji.php";
 		
 		}
 		public function getTop5Referrers(){
-			$query = $this->db->prepare("SELECT * FROM `referralid` ORDER BY `totalAmount` DESC LIMIT 5");
+			$query = $this->db->prepare("SELECT * FROM referralid ORDER BY totalAmount DESC LIMIT 5");
 			$query->execute();
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2268,7 +2267,7 @@ include "emoji.php";
 		}
 		
 		public function getMenuLogins_1(){
-			$query = $this->db->prepare("SELECT * FROM `tool_logs_1` WHERE `user_id` = :license ORDER BY `time`");
+			$query = $this->db->prepare("SELECT * FROM tool_logs_1 WHERE user_id = :license ORDER BY time");
 			$query->execute(array("license"=>$this->getFromTable_MyId("id", "users")));
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2285,7 +2284,7 @@ include "emoji.php";
 			}
 		}
 		public function getMenuLogins(){
-			$query = $this->db->prepare("SELECT * FROM `tool_logs` WHERE `user_id` = :license ORDER BY `time` DESC");
+			$query = $this->db->prepare("SELECT * FROM tool_logs WHERE user_id = :license ORDER BY time DESC");
 			$query->execute(array("license"=>$this->getFromTable_MyId("id", "users")));
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2302,7 +2301,7 @@ include "emoji.php";
 			}
 		}
 		public function getWebsiteLogins(){
-			$query = $this->db->prepare("SELECT * FROM `login_logs` WHERE `userid` = :license ORDER BY `time` DESC");
+			$query = $this->db->prepare("SELECT * FROM login_logs WHERE userid = :license ORDER BY time DESC");
 			$query->execute(array("license"=>$this->getFromTable_MyId("id", "users")));
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2319,7 +2318,7 @@ include "emoji.php";
 			}
 		}
 		public function getUserCurrentLogs(){
-			$query = $this->db->prepare("SELECT * FROM `ip_logs` WHERE `userid` = :id ORDER BY `time`");
+			$query = $this->db->prepare("SELECT * FROM ip_logs WHERE userid = :id ORDER BY time");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2338,7 +2337,7 @@ include "emoji.php";
 			}
 		}
 		public function getUsernameHistory(){
-			$query = $this->db->prepare("SELECT * FROM `username_history` WHERE `userid` = :id ORDER BY `time` DESC LIMIT 20");
+			$query = $this->db->prepare("SELECT * FROM username_history WHERE userid = :id ORDER BY time DESC LIMIT 20");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2352,7 +2351,7 @@ include "emoji.php";
 			}
 		}
 		public function getHWIDHistory(){
-			$query = $this->db->prepare("SELECT * FROM `hwid_history` WHERE `userid` = :id ORDER BY `time`");
+			$query = $this->db->prepare("SELECT * FROM hwid_history WHERE userid = :id ORDER BY time");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2368,7 +2367,7 @@ include "emoji.php";
 		}
 		
 		public function Resethwid(){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res)
@@ -2383,7 +2382,7 @@ include "emoji.php";
 			}
 		}
 		public function updateProfileSettings($pic, $username,$email){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `username` = :username");
+			$query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
 			$query->execute(array("username"=>self::sanitize($username)));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res['username'] == $this->getFromTable_MyId("username","users")){
@@ -2403,7 +2402,7 @@ include "emoji.php";
 			}
 		}
 		public function updatepass($oldpass,$newpass){
-			$query = $this->db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM users WHERE id = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res)
@@ -2424,7 +2423,7 @@ include "emoji.php";
 			}
 		}
 		public function updateShoutboxIcon($value){
-			$query = $this->db->prepare("SELECT * FROM `store` WHERE `userid` = :id");
+			$query = $this->db->prepare("SELECT * FROM store WHERE userid = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res[''.self::sanitize($value).''] == "1"){
@@ -2432,7 +2431,7 @@ include "emoji.php";
 			}
 		}
         public function getMenuSettingStatus($value){
-			$query = $this->db->prepare("SELECT * FROM `websiteSettings` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM websiteSettings WHERE id = :id");
 			$query->execute(array("id"=>"1"));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res[$value] == "1"){
@@ -2442,7 +2441,7 @@ include "emoji.php";
 			}
 		}
 		public function getToolSettingStatus($value){
-			$query = $this->db->prepare("SELECT * FROM `toolSettings` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM toolSettings WHERE id = :id");
 			$query->execute(array("id"=>"1"));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			if($res[$value] == "1"){
@@ -2452,19 +2451,19 @@ include "emoji.php";
 			}
 		}
 		public function getSiteUsersLogins($value){
-			$query = $this->db->prepare("SELECT * FROM `logins_users` WHERE `id` = :id");
+			$query = $this->db->prepare("SELECT * FROM logins_users WHERE id = :id");
 			$query->execute(array("id"));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			$this->update("logins_users", array("timestamp"=>self::sanitize($value)), "userid", $_SESSION['id']);
 		}
 		public function getMenuSettingColor($rgb){
-			$query = $this->db->prepare("SELECT * FROM `menu_settings` WHERE `userid` = :id");
+			$query = $this->db->prepare("SELECT * FROM menu_settings WHERE userid = :id");
 			$query->execute(array("id"=>$_SESSION['id']));
 			$res = $query->fetch(PDO::FETCH_ASSOC);
 			return $res[$rgb];
 		}
 		public function SiteName(){
-			$query = $this->db->prepare("SELECT * FROM `settings` WHERE `id` = :id LIMIT 1");
+			$query = $this->db->prepare("SELECT * FROM settings WHERE id = :id LIMIT 1");
 			$query->execute(array("id"=>1));
 			$res = $query->fetchAll();
 			foreach($res as $row){
@@ -2472,7 +2471,7 @@ include "emoji.php";
 			}
 		}
 		public function SiteDesc(){
-			$query = $this->db->prepare("SELECT * FROM `settings` WHERE `id` = :id LIMIT 1");
+			$query = $this->db->prepare("SELECT * FROM settings WHERE id = :id LIMIT 1");
 			$query->execute(array("id"=>1));
 			$res = $query->fetchAll();
 			foreach($res as $row){

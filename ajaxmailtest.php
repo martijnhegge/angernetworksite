@@ -2,44 +2,11 @@
     session_start();
     ob_start();
     include "php/user.php";
-    include "includes/translation.php";
     $con = new database;
     $user = new user;
     $con->connect();
     $userid = $_SESSION['id'];
-    $user->initChecks();
-    $lng = new translation;
-
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
-
-    //Load Composer's autoloader
-    require 'vendor/autoload.php';
-
-    if($_GET['id'] != null)
-    {
-       $query1 = $con->db->prepare("SELECT * FROM `ALLHISTORY` WHERE `ID` = :license");
-       $query1->execute(array("license"=>$_GET['id']));
-       $result2 = $query1->fetch(PDO::FETCH_ASSOC);
-        if($result2)
-        {
-            if($result2['userid'] == $_SESSION['id'])
-            {
-              $query = $con->db->prepare("DELETE FROM `ALLHISTORY` WHERE `ID` = :license");
-              $query->execute(array("license"=>$_GET['id']));
-              header('Location: logger.php');
-            }
-        }
-        else
-        {
-            if($_GET['id'] == "all")
-            {
-              $query2 = $con->db->prepare("DELETE FROM `ALLHISTORY` WHERE `userid` = :license");
-              $query2->execute(array("license"=>$_SESSION['id']));
-              header('Location: logger.php');
-            }
-        }
-    }
+    $user->initChecks(); 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,6 +26,7 @@
         <link href="assets/vendors/fullcalendar/core/main.min.css" rel="stylesheet">
         <link href="assets/vendors/fullcalendar/daygrid/main.min.css" rel="stylesheet">
         <link href="assets/css/app.min.css" rel="stylesheet">
+        <link href="assets/toastr.min.css" rel="stylesheet">
     </head>
 <style> 
 .toast{
@@ -88,7 +56,7 @@
                 <div class="logo d-none d-md-block">
                     <a href="index.php">
                         AnGerNetwork
-                        <small>AnGerStresser - Attack Hub</small>
+                        <small><?php echo $user->getFromTable_MyId("username", "users"); ?></small>
                     </a>
                 </div>
 
@@ -149,104 +117,49 @@
 
             <section class="content">
                 <header class="content__title">
-                    <h1>Attack Hub<small></small></h1>
+                    <h1>Port Scanner<small></small></h1>
                 </header>
-                 
-            <div class="row"> 
-                <div class="col-md-4">
-                    
+
+            <div class="row">
+                <div class="col-md-6">
                     <div class="card">
                     <div class="card-body">
-                            <h4 class="card-title">Attack</h4>
+                            <h4 class="card-title">Scan Ports</h4>
                             <h6 class="card-subtitle"></h6>
-                            <form action="mailtest.php" method="POST">  
-                                <div class="form-group"> 
-                                <input class="form-control text-center" name="mail" value="" type="text" placeholder="E-mail Address" />
+                                <form method="POST">
+                                <!-- div class="form-group">
+                                <label >IP Address</label>
+                                <input class="form-control form-control-block" name="host_ipaddress" id="host_ipaddress" value="<?php echo $_SERVER['HTTP_CF_CONNECTING_IP']; ?>">
                                 </div>
                                 <div class="form-group">
-                                <input class="form-control text-center" name="fname" value="" type="text" placeholder="First Name" />
+                                <label>Port</label>
+                                <center><input class="form-control form-control-block" name="check_port" id="check_port" placeholder="Example Port 80"></center>
                                 </div>
+             -->
                                 <div class="form-group">
-                                <input class="form-control text-center" name="lname" value="" type="text" placeholder="Last Name" />
+                                <a onclick= "sendmail(this)" class="btn btn-theme btn-block" id="a-sign-in">send emails</a>
+                                <!-- <button type="button" onclick="scan(document.getElementById('host_ipaddress').value, document.getElementById('check_port').value);" class="btn btn-primary btn-block">Scan Port</button>
+                                <button type="button" onclick="scan_all(document.getElementById('host_ipaddress').value);" class="btn btn-primary btn-block">Scan All Ports</button> -->
                                 </div>
-                                <div class="form-group">
-                                        <div class="controls"><dt class="text-white">Subject:</dt>
-                                        <select  style="text-align:center; height:30px" required id="consip" class="btn btn-theme btn-block grey dropdown-toggle" name="subject">
-                                            <option value="none selected" selected="selected">- Select A Subject -
-                                            <option value="Bug Report"/>Bug Report
-                                            <option value="Error Report"/>Error Report
-                                            <option value="Feedback"/>Feedback
-                                            <option value="Question"/>Question
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                <textarea name="problem" value="Page is not working" class="form-control"></textarea>
-                            </div>
-                                <div class="form-actions">
-                                <button name="phpmailtest" id="phpmailtest" class="btn btn-danger btn-block">Launch Attack</button>
                             </form>
-                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-8">
-                     
+                    <div class="col-md-6">
                     <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Last Attacks</h4>
-                        <h6 class="card-subtitle"></h6>
-
-                        <div class="table-responsive data-table">
-                            <table id="data-table" class="table table-sm">
-                                <thead>
-                                <tr>                    
-                                <th>ID</th>
-                                <th>IP Address</th>
-                                <th>Port</th>
-                                <th>Time</th>
-                                <th>Method</th>
-                                <th>Date</th>
-                                <th>Attack Again</th>
-                                <th>Stop Attack</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php 
-                                $query = $con->db->prepare("SELECT * FROM `ddos_attack_logs` WHERE userid = 1 ORDER BY `id` DESC");
-                                $query->execute();
-                                $res = $query->fetchAll();
-                                foreach($res as $row)
-                                {
-                                echo '
-                                <tr>    
-                                <td>'.$row['id'].'</td>
-                                <td>'.$row['ip'].'</td>
-                                <td>'.$row['port'].'</td>
-                                <td>'.$row['time'].'</td>
-                                <td>'.$row['method'].'</td>
-                                <td><button type="submit" name="addToSafe" class="btn btn-primary btn-block">Attack Again</button></td> 
-                                <td>Stop Attack</td> 
-                                ';  
-                                // echo '
-                                // <td>
-                                // <a type="submit" class="btn btn-primary btn-block pull-right" name="deleteFromSafe" href="logger.php?id='.$row['ID'].'">Remove</a>
-                                // <input type="hidden" name="id" value="'.$row['ID'].'" />     
-                                // </td>
-                                // </tr>
-                                // ';
-                                 }
-                                 ?>
-                                </tbody>
-                                </table>
-                                        </div>
-                                    </div>
+                            <h4 class="card-title">Scanner Result</h4>
+                            <h6 class="card-subtitle"></h6>
+                                <form method="POST">
+                                <div class="form-group">
+                                <div class="text-left" id="port_result"></div>
                                 </div>
+                                </form>
                             </div>
-                        </div>                     
-                    </div>      
-                </div>
-            </form>             
+                        </div>
+                    </div> 
+                </div>         
+            </div>
         </div>
     </div>
 </div>
@@ -283,6 +196,52 @@
         <script src="assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
         <script src="assets/vendors/fullcalendar/core/main.min.js"></script>
         <script src="assets/vendors/fullcalendar/daygrid/main.min.js"></script>
+        <script src="assets/toastr.min.js"></script>
+        <script src="assets/scripts/login.js"></script>
+<script>
+        function sendmail(){
+            //var redirurl = document.getElementById("redirurl").value;
+            //var lasturl = <?php echo $getlasturl;?>
+        $.post('testajaxmail.php', $("#login-form").serialize(), function(data){   
+            //$('#a-sign-in').unbind('onclick').onclick();
+                switch(data){
+                case 1: 
+                    toastr.success("emails send successfully"); 
+                    
+                break;
+                case 0:
+                    toastr.error("emails where not send");  
+
+                break;
+                /*case "banned": 
+                    toastr.error("Your Account Has Been Banned"); window.setTimeout(function() { window.location.href = 'banned';}, 2000); 
+                break;
+                case "timeout": 
+                    toastr.error("Your Account Has Been Temporarily Banned"); window.setTimeout(function() { window.location.href = 'banned';}, 2000); 
+                break;
+                case "no-exist": 
+                    toastr.error("Your Username /  Password Was Incorrect"); 
+                break;
+                case "incorrect-cap": 
+                    toastr.error("The Captcha Was Incorrect"); 
+                break;
+                case "empty-cap": 
+                    toastr.error("Please Complete The Captcha"); 
+                break;
+                case "not-verified": 
+                    toastr.error("Your Account Is Pending Activation Please Check Your Email Including Your Spam Folder Or Resend It By Using he Resend Button"); 
+                    $("#resendmail").prop("hidden",false);
+                break;*/
+                default:
+                    toastr.error("Unknown Error"); 
+                } 
+            });
+        }
+    $(document).keypress(function(e) {
+    if (e.which == 13) {
+    login();
+    }});
+</script>
         <!-- Site Functions & Actions -->
         <script src="assets/js/app.min.js"></script>
     </body>

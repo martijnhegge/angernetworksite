@@ -9,5 +9,5 @@ $user->update("users", array("OnlineStatus"=>"Offline","OnlineStatusColor"=>"dan
 $user->update("active_users",array("active"=>"0","latestip"=>$_SERVER['HTTP_CF_CONNECTING_IP']),"userid", $_SESSION['id']); //werkt
 echo $_SESSION = array(); 
 session_destroy(); 
-header("Location: sign_in.php");
+header("Location: sign_in");
 ?>

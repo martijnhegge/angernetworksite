@@ -1,10 +1,15 @@
 <?php
     session_start();
     include "../php/user.php";
+    include "../php/postgresql.php";
     $user = new user;
     $con = new database;
     $con->connect();
     $user->initChecks();
+
+    $pgsql = new postgresql;
+    $pgsql->psqlconnect();
+
     if(!$user->isAdmin()){
         $_SESSION['no-admin'] = "1";
         $SQL = $con->db->prepare('INSERT INTO `noadmin_logs` (`userid`, `page`)VALUES(:id, :page)');
@@ -143,7 +148,7 @@
                                 </thead>
                                 <tbody>
                                 <?php 
-                                            $query = $con->db->prepare("SELECT * FROM `users`");
+                                            $query = $con->db->prepare("SELECT * FROM `users`"); //$query = $pgsql->dbp->prepare("SELECT * FROM public.users");
                                             $query->execute();
                                             $res = $query->fetchAll();
                                             foreach($res as $row){

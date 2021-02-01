@@ -1,9 +1,15 @@
 <?php
+// ini_set('display_errors', '1');
     session_start();
     ob_start();
+    include "php/translation.php";
     include "php/user.php";
+    include 'php/errorhandler.php';
     include "includes/config.php";
+   
     $ACTUALURL = 'sfsf.php';
+    // $errhand = new ErrorHandler;
+    $trlate = new translation;
     $user = new user;
     $con = new database;
     $con->connect();
@@ -13,7 +19,8 @@
     $message = '';
     $noadmin = $_SESSION['no-admin'];
     $notallowed = $_SESSION['not-allowed'];
-
+    //$lang = 'hkl';
+    //$sdfsdfg = 'gg'%8;
     $rowCount = file_get_contents("https://insane-dev.xyz/beta/includes/API/?TYPE=COUNTPSN");
     
     if(!in_array($_SERVER['HTTP_CF_CONNECTING_IP'], $whitelisted))
@@ -119,6 +126,10 @@ function showResult(str) {
     overflow-x: hidden;
     /*overflow-y: scroll;*
 }*/
+#livesearch {
+    z-index: 999;
+    position: relative;
+}
 #livesearch a
 {
     width: 100%;
@@ -288,6 +299,41 @@ function showResult(str) {
     .insane {
     color: #861bc4;}
          
+ .menu {
+  width: 120px;
+  box-shadow: 0 0 5px 3px rgba(255,0,0, 0.2);
+  position: absolute;
+  display: none;
+  z-index: 999;
+  background-color: #1e2a31;
+  border-radius: 10px;
+}
+.menu a {
+    color: #9bbcd1;
+
+}
+  .menu-options {
+    list-style: none;
+    padding: 10px 0;
+    z-index: 999;
+    margin-bottom: 0;
+}
+    .menu-option {
+      font-weight: 500;
+      font-size: 14px;
+      padding: 10px 40px 10px 20px;
+      cursor: pointer;
+      z-index: 999;
+}
+      .menu-option:hover {
+        background: rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}
+.notifications__body {
+    overflow: auto !important;
+}
 </style>
     <body>
         <div>
@@ -311,18 +357,24 @@ function showResult(str) {
                         <small><?php echo $user->getFromTable_MyId("username", "users"); ?></small>
                     </a>
                 </div>
+                <form class="search">
+                    <input type="text" class="search__input" onkeyup="showResult(this.value)" placeholder="Search pages, resolvers &amp; more">
+                    <i class="zwicon-search search__helper"></i>
+                    <i class="zwicon-arrow-left search__reset" onclick="showResult('')"></i>
+                    <div id="livesearch" class="livesearch" style="border: none;"></div>
+                </form>
 
                 <ul class="top-nav">
-                      <li class="d-xl-none">
-                        <a class="top-nav__search" href="#" data-toggle="collapse" data-target="#cLV"> <i class="zwicon-search"></i></a>
+                  <li class="d-xl-none">
+                        <a class="top-nav__search" href="#" data-toggle="collapse" data-target="#cLV"> <i class="zwicon-task"></i></a>
                     </li>
 
                     <li class="d-xl-none">
-                        <a data-notification="#notifications-messages" href="#" data-toggle="modal" data-target="#myModalInbox"><i class="zwicon-mail" data-toggle="modal" data-target="#myModalInbox"></i></a>
+                        <a data-notification="#notifications-messages" href="#"><i class="zwicon-mail"></i></a>
                     </li>
 
                     <li class="d-xl-none">
-                        <a data-notification="#notifications-alerts" href="#" data-toggle="modal" data-target="#myModalNews"><i class="zwicon-bell" data-toggle="modal" data-target="#myModalNews"></i></a>
+                        <a data-notification="#notifications-alerts" href="#"><i class="zwicon-bell"></i></a> <!--  data-toggle="modal" data-target="#myModalNews" -->
                     </li>
 
                     <li class="d-none d-sm-block d-xl-none">
@@ -350,12 +402,186 @@ function showResult(str) {
 
             <div class="toggles d-none d-xl-block">
                 <a data-notification="#notifications-messages" data-toggle="modal" data-target="#myModalInbox"><i class="zwicon-mail" data-toggle="modal" data-target="#myModalInbox"></i></a>
-                <a data-notification="#notifications-alerts" data-toggle="modal" data-target="#myModalNews"><i class="zwicon-bell" data-toggle="modal" data-target="#myModalNews"></i></a>
-                <a data-notification="#notifications-tasks" data-toggle="collapse" data-target="#cLV"><i class="zwicon-search"></i></a>
+                <a data-notification="#notifications-alerts"><i class="zwicon-bell"></i></a>
+                <a data-notification="#notifications-tasks" data-toggle="collapse" data-target="#cLV"><i class="zwicon-task"></i></a>
             </div>
 
         </header>
+        <div class="menu">
+                    <ul class="menu-options">
+                        <li class="menu-option" onclick="window.history.back();">Back</li>
+                        <li class="menu-option" onclick="location.reload();">Reload</li>
+                        <li class="menu-option"><a href="attackhub">AttackHub</a></li>
+                        <li class="menu-option"><a href="profile">Profile</a></li><!-- onclick="gotoprofile(this);" -->
+                        <li class="menu-option"><a href="sign_out">Logout</a></li>
+                    </ul>
+                </div>
             <div class="main">
+                
+                <aside class="sidebar notifications">
+                <div class="notifications__panel" id="notifications-messages" style="display: block;">
+                    <div class="sidebar__header">
+                        <i class="zwicon-arrow-left sidebar__close"></i>
+                        <h2>Messages <small>0 Unread messages</small></h2>
+
+                        <div class="actions">
+                            <a href="" class="actions__item"><i class="zwicon-plus"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="notifications__body">
+                        <div class="scrollbar os-host os-theme-light os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-scrollbar-vertical-hidden os-host-transition"><div class="os-resize-observer-host"><div class="os-resize-observer observed" style="left: 0px; right: auto;"></div></div><div class="os-size-auto-observer" style="height: calc(100% + 1px); float: left;"><div class="os-resize-observer observed"></div></div><div class="os-content-glue" style="margin: -21px 0px;"></div><div class="os-padding"><div class="os-viewport os-viewport-native-scrollbars-invisible" style=""><div class="os-content" style="padding: 21px 0px; height: 100%; width: 100%;">
+                            <div class="listview listview--hover listview--truncate">
+                                <?php
+                                $query = $con->db->prepare("SELECT user_inbox.*, users.pic FROM `user_inbox` LEFT JOIN `users` ON users.id = user_inbox.sender_id WHERE userid = :userid ORDER BY time DESC");
+                                $query->execute(array("userid"=>$_SESSION['id']));
+                                $res = $query->fetchAll();
+                                foreach($res as $row)
+                                {
+                                echo '
+                                    <a href="" class="listview__item"  data-toggle="modal" data-target="#myModal'.$row['id'].'">
+                                        <img class="avatar-img" src="'.$row['pic'].'" alt="">
+                                        <div class="listview__content">
+                                            <h4>'.$row['title'].'</h4>
+                                            <p>'.$row['message'].'</p>
+                                        </div>
+                                    </a>
+                                ';
+                                 }
+                                 ?>
+                            </div>
+                        </div></div></div><div class="os-scrollbar os-scrollbar-horizontal os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px); width: 100%;"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px); height: 100%;"></div></div></div><div class="os-scrollbar-corner"></div></div>
+                    </div>
+                </div>
+                <div class="notifications__panel" id="notifications-alerts" style="display: none;">
+                    <div class="sidebar__header">
+                        <i class="zwicon-arrow-left sidebar__close"></i>
+                        <h2>Alerts <small>100+ New Alerts</small></h2>
+
+                        <div class="actions">
+                            <a href="" class="actions__item"><i class="zwicon-checkmark-circle"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="notifications__body">
+                        <div class="scrollbar os-host os-theme-light os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-scrollbar-vertical-hidden os-host-transition"><div class="os-resize-observer-host"><div class="os-resize-observer observed" style="left: 0px; right: auto;"></div></div><div class="os-size-auto-observer" style="height: calc(100% + 1px); float: left;"><div class="os-resize-observer observed"></div></div><div class="os-content-glue" style="margin: -21px 0px; width: 0px; height: 0px;"></div><div class="os-padding"><div class="os-viewport os-viewport-native-scrollbars-invisible" style=""><div class="os-content" style="padding: 21px 0px; height: 100%; width: 100%;">
+                            <div class="listview listview--hover listview--truncate">
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-red"><i class="zwicon-info-circle"></i></span>
+                                    <div class="listview__content">
+                                        <h4>Email Marketing</h4>
+                                        <p>Need to re-send emails</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-purple"><i class="zwicon-package"></i></span>
+                                    <div class="listview__content">
+                                        <h4>New order recieved</h4>
+                                        <p>#241 Premium plan for 2 years</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-blue"><i class="zwicon-calendar-never"></i></span>
+                                    <div class="listview__content">
+                                        <h4>Upcoming event</h4>
+                                        <p>Meeting with Kane Williamson in 8 hours</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-pink"><i class="zwicon-exclamation-triangle"></i></span>
+                                    <div class="listview__content">
+                                        <h4>Server limit reached!</h4>
+                                        <p>Process reached over 75%</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-lime"><i class="zwicon-sale-badge"></i></span>
+                                    <div class="listview__content">
+                                        <h4>Sold an item</h4>
+                                        <p>#124 Samsung Galaxy S10 Plus</p>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <span class="avatar-char bg-gradient-orange"><i class="zwicon-code"></i></span>
+                                    <div class="listview__content">
+                                        <h4>New issue filed</h4>
+                                        <p>#475 Web page not found</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div></div></div><div class="os-scrollbar os-scrollbar-horizontal os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar-corner"></div></div>
+                    </div>
+                </div>
+                <div class="notifications__panel" id="notifications-tasks" style="display: none;">
+                    <div class="sidebar__header">
+                        <i class="zwicon-arrow-left sidebar__close"></i>
+                        <h2>Ongoing Tasks <small>5 Pending tasks</small></h2>
+                    </div>
+
+                    <div class="notifications__body">
+                        <div class="scrollbar os-host os-theme-light os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-scrollbar-vertical-hidden os-host-transition"><div class="os-resize-observer-host"><div class="os-resize-observer observed" style="left: 0px; right: auto;"></div></div><div class="os-size-auto-observer" style="height: calc(100% + 1px); float: left;"><div class="os-resize-observer observed"></div></div><div class="os-content-glue" style="margin: -21px 0px; width: 0px; height: 0px;"></div><div class="os-padding"><div class="os-viewport os-viewport-native-scrollbars-invisible" style=""><div class="os-content" style="padding: 21px 0px; height: 100%; width: 100%;">
+                            <div class="listview listview--hover listview--truncate">
+
+                                
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>HTML5 Validation Report</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-blue" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>Google Chrome Extension</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-amber" role="progressbar" style="width: 43%" aria-valuenow="43" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>Social Intranet Projects</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-green" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>Bootstrap Admin Template</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-red" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="" class="listview__item">
+                                    <div class="listview__content">
+                                        <h4>Youtube Client App</h4>
+
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-gradient-purple" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div></div></div><div class="os-scrollbar os-scrollbar-horizontal os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar-corner"></div></div>
+                    </div>
+                </div>
+            </aside>
                 <div class="sidebar navigation">
                     <div class="scrollbar">
                         <ul class="navigation__menu">
@@ -371,49 +597,15 @@ function showResult(str) {
                     <h1>Dashboard<small></small></h1>
                 </header>
 
-            <!-- Modal -->
-              <div class="modal fade" id="myModalInbox" role="dialog">
-                <div class="modal-dialog modal-lg">
-                
-                  <!-- Modal content-->
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      
-                      <h4 class="modal-title" style="color: #f74d48;">Inbox Of <?= $user->getFromTable_MyId("username", "users");?> </h4>
-                      <button type="button" class="close" data-dismiss="modal" style="color: #f74d48;">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                      <p>
-                        <ul class="timeline">
-                                <?php
-                                $query = $con->db->prepare("SELECT * FROM `user_inbox` WHERE userid = :userid ORDER BY time DESC");
-                                $query->execute(array("userid"=>$_SESSION['id']));
-                                $res = $query->fetchAll();
-                                foreach($res as $row)
-                                {
-                                echo '
-                                    <li class="event" data-date="'.$row['time'].'">
-                                        <h3>'.$row['title'].'</h3>
-                                        <p>'.$row['message'].'<br><br><i><b>By '.$row['sender_name'].'</b></i></p>
-                                    </li>
-                                    
-                                ';
-                                 }
-                                 ?>
-                                   
-                                </ul>
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" >Close</button>
-                    </div>
-                  </div>
-                  
-                </div>
-              </div>
+                <?php
+                    $query = $con->db->prepare("SELECT * FROM `user_inbox` ");
+                    $query->execute();
+                    $res = $query->fetchAll();
+                    foreach($res as $row)
+                    { 
 
-              <!-- Modal -->
-                  <div class="modal fade" id="myModalNews" role="dialog">
+
+                  echo '<div class="modal fade" id="myModal'.$row['id'].'" role="dialog">
                     <div class="modal-dialog modal-lg">
                     
                       <!-- Modal content-->
@@ -426,21 +618,11 @@ function showResult(str) {
                         <div class="modal-body">
                           <p>
                               <ul class="timeline">
-                                <?php
-                                $query = $con->db->prepare("SELECT * FROM `news` ORDER BY date DESC");
-                                $query->execute();
-                                $res = $query->fetchAll();
-                                foreach($res as $row)
-                                {
-                                echo '
-                                    <li class="event" data-date="'.$row['date'].'">
+                                
+                                    <li class="event" data-date="'.$row['time'].'">
                                         <h3>'.$row['title'].'</h3>
                                         <p>'.$row['message'].'</p>
                                     </li>
-                                    
-                                ';
-                                 }
-                                 ?>
                                    
                                 </ul>
                           </p>
@@ -451,10 +633,10 @@ function showResult(str) {
                       </div>
                       
                     </div>
-                  </div>
+                  </div>';}?>
                 
                 <div class="row">
-                    <div class="collapse col-md-12" id="cLV">
+                    <!-- <div class="collapse col-md-12" id="cLV">
                         <div class="card">
                             <div class="card-body">
                                 <h4 class="card-title">search on webiste</h4>
@@ -462,15 +644,15 @@ function showResult(str) {
                                         <div class="form-group">
                                             <input class="form-control" type="text" size="30" onkeyup="showResult(this.value)" placeholder="Search Criteria">
 
-                                            <!-- <div class="form-group"> -->
+                                            <div class="form-group">
                                                 <div id="livesearch" class="livesearch" style="border: none;"></div>
-                                        <!-- </div> -->
+                                        <!-- </div> --
                                         </div>
                                     </form> 
                                     <button type="button" class="btn btn-primary btn-block" data-toggle="collapse" data-target="#cLV">Close</button>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-body">
@@ -496,8 +678,12 @@ function showResult(str) {
 
                      <div class="col-md-3">
                     	<div class="card">
-                            <div class="card-body">                    
-                                <h6>Tool Features/Announcement</h6>
+                            <div class="card-body">  
+                            <!-- <div class="actions">
+                                <a href="" class="actions__item"><i class="zwicon-cog"></i></a>
+                                <a href="" class="actions__item"><i class="zwicon-refresh-left"></i></a>
+                            </div>    -->               
+                                <h6><?php echo $trlate->lng('TFA');?></h6>
                                 <br>
                                     <h6 class="card-subtitle">Best Multi RTM Tool - Most Non Host Mods Options - Unique Client Options </h6>   
                                 <br>
@@ -539,11 +725,11 @@ function showResult(str) {
                         <div class="card stats">
                             <div class="card-body">
                                 <h4 class="card-title">Online Users</h4>
-                                <h6 class="card-subtitle"><?php echo $user->getWhoIsOnline(); ?></h6>                              
+                                <h6 class="card-subtitle"><?php $bloep = $user->getWhoIsOnline(); echo substr_replace($bloep, "", -1); ?></h6>                              
                             </div>
                         </div>
                     </div>
-                    
+                    <!-- <div class="row equal"> -->
                     <div class="col-md-5">
                     	<div class="card">
                             <div class="card-body">
@@ -600,6 +786,7 @@ function showResult(str) {
                         </div>
                     </div>
                 </div>
+            <!-- </div> -->
             </div>
             <div class="col-md-4">
                         <div class="card stats">
@@ -642,6 +829,38 @@ function showResult(str) {
         <script src="assets/vendors/lightgallery/js/lightgallery-all.min.js"></script>
         <script src="assets/toastr.min.js"></script>
         <script src="assets/scripts/login.js"></script>
+        <script type="text/javascript">
+            function gotoprofile() {
+                window.Location.href = 'profile';
+            }
+            const menu = document.querySelector(".menu");
+let menuVisible = false;
+
+const toggleMenu = command => {
+  menu.style.display = command === "show" ? "block" : "none";
+  menuVisible = !menuVisible;
+};
+
+const setPosition = ({ top, left }) => {
+  menu.style.left = `${left}px`;
+  menu.style.top = `${top}px`;
+  toggleMenu("show");
+};
+
+window.addEventListener("click", e => {
+  if(menuVisible)toggleMenu("hide");
+});
+
+window.addEventListener("contextmenu", e => {
+  e.preventDefault();
+  const origin = {
+    left: e.pageX,
+    top: e.pageY
+  };
+  setPosition(origin);
+  return false;
+});
+        </script>
         <?php 
         if($noadmin == '1' || $noadmin == 1)
         {

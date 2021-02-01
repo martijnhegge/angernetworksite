@@ -2,43 +2,18 @@
     session_start();
     ob_start();
     include "php/user.php";
-    include "includes/translation.php";
+    include "../../psn_resolver/inc/psn.php";
+    include "../../psn_resolver/inc/database.php";
     $con = new database;
     $user = new user;
     $con->connect();
-    $userid = $_SESSION['id'];
     $user->initChecks();
-    $lng = new translation;
+    $id = $_GET['id']; 
+    $resolveOut ='';
 
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
-
-    //Load Composer's autoloader
-    require 'vendor/autoload.php';
-
-    if($_GET['id'] != null)
+    if(isset($_POST['submitpsn']))
     {
-       $query1 = $con->db->prepare("SELECT * FROM `ALLHISTORY` WHERE `ID` = :license");
-       $query1->execute(array("license"=>$_GET['id']));
-       $result2 = $query1->fetch(PDO::FETCH_ASSOC);
-        if($result2)
-        {
-            if($result2['userid'] == $_SESSION['id'])
-            {
-              $query = $con->db->prepare("DELETE FROM `ALLHISTORY` WHERE `ID` = :license");
-              $query->execute(array("license"=>$_GET['id']));
-              header('Location: logger.php');
-            }
-        }
-        else
-        {
-            if($_GET['id'] == "all")
-            {
-              $query2 = $con->db->prepare("DELETE FROM `ALLHISTORY` WHERE `userid` = :license");
-              $query2->execute(array("license"=>$_SESSION['id']));
-              header('Location: logger.php');
-            }
-        }
+        $resolveOut = file_get_contents("https://insane-dev.xyz/beta/includes/resolver/function/resolver.php?resolve_result=psn&gamertag=".$_POST['gamertag']."");
     }
 ?>
 <!DOCTYPE html>
@@ -64,6 +39,8 @@
 .toast{
     background: #861bc4;
 } 
+.insane {
+    color: #861bc4;}
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #2e343a; }
     ::-webkit-scrollbar-thumb { background: #861bc4; }
@@ -88,7 +65,7 @@
                 <div class="logo d-none d-md-block">
                     <a href="index.php">
                         AnGerNetwork
-                        <small>AnGerStresser - Attack Hub</small>
+                        <small><?php echo $user->getFromTable_MyId("username", "users"); ?></small>
                     </a>
                 </div>
 
@@ -149,104 +126,62 @@
 
             <section class="content">
                 <header class="content__title">
-                    <h1>Attack Hub<small></small></h1>
+                    <h1>Frequently Asked Questions<small></small></h1>
                 </header>
-                 
-            <div class="row"> 
-                <div class="col-md-4">
-                    
-                    <div class="card">
-                    <div class="card-body">
-                            <h4 class="card-title">Attack</h4>
-                            <h6 class="card-subtitle"></h6>
-                            <form action="mailtest.php" method="POST">  
-                                <div class="form-group"> 
-                                <input class="form-control text-center" name="mail" value="" type="text" placeholder="E-mail Address" />
-                                </div>
-                                <div class="form-group">
-                                <input class="form-control text-center" name="fname" value="" type="text" placeholder="First Name" />
-                                </div>
-                                <div class="form-group">
-                                <input class="form-control text-center" name="lname" value="" type="text" placeholder="Last Name" />
-                                </div>
-                                <div class="form-group">
-                                        <div class="controls"><dt class="text-white">Subject:</dt>
-                                        <select  style="text-align:center; height:30px" required id="consip" class="btn btn-theme btn-block grey dropdown-toggle" name="subject">
-                                            <option value="none selected" selected="selected">- Select A Subject -
-                                            <option value="Bug Report"/>Bug Report
-                                            <option value="Error Report"/>Error Report
-                                            <option value="Feedback"/>Feedback
-                                            <option value="Question"/>Question
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                <textarea name="problem" value="Page is not working" class="form-control"></textarea>
-                            </div>
-                                <div class="form-actions">
-                                <button name="phpmailtest" id="phpmailtest" class="btn btn-danger btn-block">Launch Attack</button>
-                            </form>
-                                </div>
+
+            
+                    <div class="col-md-12">
+                     
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- <h4 class="card-title">ChangeLogs</h4> -->
+                                <h6 class="card-subtitle"></h6>
+
+                                    <h4>Source Code</h4>
+    <textarea class="form-control" id="source" style="width: calc(50% - 8px); height: 350px !important; resize: vertical;">
+#include <iostream>
+#include <string>
+
+#pragma message "Hello from compilation!"
+
+int main()
+{
+    std::string name;
+    std::cin >> name;
+
+    std::cout << "Hi " << name << "!\n";
+    std::cerr << "This is a dummy error message " << name << ".\n";
+    std::cout << "But don't worry " << name << ", everything is fine! :)\n";
+
+    return 0;
+}
+</textarea>
+
+    <h4>Language</h4>
+    <select id="lang">
+        <option>Bash</option>
+        <option>C#</option>
+        <option selected>C++</option>
+        <option>C</option>
+        <option>Java</option>
+        <option>Python</option>
+        <option>Ruby</option>
+    </select>
+
+    <h4>Input</h4>
+    <textarea id="input" style="width: calc(50% - 8px); height: 10%; resize: vertical;">John</textarea>
+
+    </br></br>
+    <button id="run" onclick="run()">Run (Ctrl + Enter)</button>
+
+    <textarea class="form-control"  id="output" style=" resize: vertical;" ></textarea> <!-- style="width: 50%; height: 100%; position: fixed; top: 0; right: 0; resize: none;" -->
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-8">
-                     
-                    <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Last Attacks</h4>
-                        <h6 class="card-subtitle"></h6>
-
-                        <div class="table-responsive data-table">
-                            <table id="data-table" class="table table-sm">
-                                <thead>
-                                <tr>                    
-                                <th>ID</th>
-                                <th>IP Address</th>
-                                <th>Port</th>
-                                <th>Time</th>
-                                <th>Method</th>
-                                <th>Date</th>
-                                <th>Attack Again</th>
-                                <th>Stop Attack</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php 
-                                $query = $con->db->prepare("SELECT * FROM `ddos_attack_logs` WHERE userid = 1 ORDER BY `id` DESC");
-                                $query->execute();
-                                $res = $query->fetchAll();
-                                foreach($res as $row)
-                                {
-                                echo '
-                                <tr>    
-                                <td>'.$row['id'].'</td>
-                                <td>'.$row['ip'].'</td>
-                                <td>'.$row['port'].'</td>
-                                <td>'.$row['time'].'</td>
-                                <td>'.$row['method'].'</td>
-                                <td><button type="submit" name="addToSafe" class="btn btn-primary btn-block">Attack Again</button></td> 
-                                <td>Stop Attack</td> 
-                                ';  
-                                // echo '
-                                // <td>
-                                // <a type="submit" class="btn btn-primary btn-block pull-right" name="deleteFromSafe" href="logger.php?id='.$row['ID'].'">Remove</a>
-                                // <input type="hidden" name="id" value="'.$row['ID'].'" />     
-                                // </td>
-                                // </tr>
-                                // ';
-                                 }
-                                 ?>
-                                </tbody>
-                                </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                     
+                        
                     </div>      
-                </div>
-            </form>             
+                </div>         
+            </div>
         </div>
     </div>
 </div>
@@ -283,6 +218,128 @@
         <script src="assets/vendors/jqvmap/maps/jquery.vmap.world.js"></script>
         <script src="assets/vendors/fullcalendar/core/main.min.js"></script>
         <script src="assets/vendors/fullcalendar/daygrid/main.min.js"></script>
+    <script type="text/javascript">
+$("#input").change(function() {
+  alert('Textarea is changed');
+});
+        $('body').on('change', '#output', function() {
+             document.getElementById("#input").style.height = 'auto';
+            document.getElementById("#input").style.height = (this.scrollHeight) + 'px';
+        });
+        $('textarea').each(function () {
+  this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+}).on('input', function () {
+  this.style.height = 'auto';
+  this.style.height = (this.scrollHeight) + 'px';
+});
+        API_KEY = ""; // Get yours for free at https://judge0.com/ce or https://judge0.com/extra-ce
+
+        var language_to_id = {
+            "Bash": 46,
+            "C": 50,
+            "C#": 51,
+            "C++": 54,
+            "Java": 62,
+            "Python": 71,
+            "Ruby": 72
+        };
+
+        function encode(str) {
+            return btoa(unescape(encodeURIComponent(str || "")));
+        }
+
+        function decode(bytes) {
+            var escaped = escape(atob(bytes || ""));
+            try {
+                return decodeURIComponent(escaped);
+            } catch {
+                return unescape(escaped);
+            }
+        }
+
+        function errorHandler(jqXHR, textStatus, errorThrown) {
+            $("#output").val(`${JSON.stringify(jqXHR, null, 4)}`);
+            $("#run").prop("disabled", false);
+        }
+
+        function check(token) {
+            $("#output").val($("#output").val() + "\nChecking submission status...");
+            $.ajax({
+                url: `https://judge0-ce.p.rapidapi.com/submissions/${token}?base64_encoded=true`,
+                type: "GET",
+                headers: {
+                    "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+                    "x-rapidapi-key": "PwIW6OlLismshr9vXDZ8DAhh4bHip1z9ZapjsnR56FDdhmhiTS"
+                },
+                success: function (data, textStatus, jqXHR) {
+                    if ([1, 2].includes(data["status"]["id"])) {
+                        $("#output").val($("#output").val() + "\nStatus: " + data["status"]["description"]);
+                        setTimeout(function() { check(token) }, 1000);
+                    }
+                    else {
+                        var output = [decode(data["compile_output"]), decode(data["stdout"])].join("\n").trim();
+                        $("#output").val(output);
+                        $("#run").prop("disabled", false);
+                    }
+                },
+                error: errorHandler
+            });
+        }
+
+        function run() {
+            $("#run").prop("disabled", true);
+            $("#output").val("Creating submission...");
+            $.ajax({
+                url: "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true",
+                type: "POST",
+                contentType: "application/json",
+                headers: {
+                    "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+                    "x-rapidapi-key": "PwIW6OlLismshr9vXDZ8DAhh4bHip1z9ZapjsnR56FDdhmhiTS"
+                },
+                data: JSON.stringify({
+                    "language_id": language_to_id[$("#lang").val()],
+                    "source_code": encode($("#source").val()),
+                    "stdin": encode($("#input").val()),
+                    "redirect_stderr_to_stdout": true
+                }),
+                success: function(data, textStatus, jqXHR) {
+                    $("#output").val($("#output").val() + "\nSubmission created.");
+                    // $("#output").setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+                    // document.getElementById("#output").style.height = 'auto';
+                    // document.getElementById("#output").style.height = ($("#output").scrollHeight) + 'px';
+                    setTimeout(function() { check(data["token"]) }, 1000);
+                },
+                error: errorHandler
+            });
+        }
+
+        $("body").keydown(function (e) {
+            if (e.ctrlKey && e.keyCode == 13) {
+                run();
+            }
+        });
+
+        $("textarea").keydown(function (e) {
+            this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+            this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            if (e.keyCode == 9) {
+                e.preventDefault();
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+
+                var append = "    ";
+                $(this).val($(this).val().substring(0, start) + append + $(this).val().substring(end));
+                this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+                this.selectionStart = this.selectionEnd = start + append.length;
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            }
+        });
+
+        $("#source").focus();
+</script>
         <!-- Site Functions & Actions -->
         <script src="assets/js/app.min.js"></script>
     </body>
